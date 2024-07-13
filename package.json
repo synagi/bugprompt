@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
-    "clean": "tsc -p tsconfig.json --clean && rm -rf dist/ *.tsbuildinfo",
+    "clean": "rm -rf dist/ *.tsbuildinfo",
     "build": "npm run clean && tsc -p tsconfig.json",
     "test": "npm run build && node test.mjs",
     "docs": "npm run build && rm -rfv ./bin/docs && node ./dist/docgen/genDocs.js",
