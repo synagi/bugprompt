@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { globSync } from "glob";
 import FileProcessor from "./FileProcessor.js";
-import FileUtils from "../log/FileUtil.js";
+import ProjectUtil from "../utils/ProjectUtil.js";
 
 interface Config {
   documents: Document[];
@@ -50,7 +50,7 @@ class DocsBuilder {
   constructor(config: Config) {
     this.validateConfig(config);
     this.config = config;
-    this.projectRoot = FileUtils.findProjectRoot() || process.cwd();
+    this.projectRoot = ProjectUtil.findProjectRoot();
   }
 
   async init(): Promise<void> {}

@@ -1,24 +1,29 @@
 import fs from "fs";
 import path from "path";
+import FileUtil from "../log/FileUtil.js";
 class ProjectUtil {
     static findProjectRoot(currentDir = process.cwd()) {
         let directory = currentDir;
-        while (directory !== path.parse(directory).root) {
+        let lastDirectory = "";
+        while (directory !== lastDirectory) {
             if (fs.existsSync(path.join(directory, "package.json"))) {
-                // Check if this is the nodejs-util package or a project using it
-                const packageJson = JSON.parse(fs.readFileSync(path.join(directory, "package.json"), "utf8"));
-                if (packageJson.name === "@synagi/nodejs-util") {
-                    // If it's the nodejs-util package, return its root
+                const projectName = FileUtil.getProjectName();
+                // Check if this is the nodejs-util package
+                if (projectName === FileUtil.getProjectName()) {
+                    // If it's the nodejs-util package, return its directory
                     return directory;
                 }
                 else {
-                    // If it's a project using nodejs-util, return its root
+                    // If it's not nodejs-util, this is the project root we want
                     return directory;
                 }
             }
+            lastDirectory = directory;
             directory = path.dirname(directory);
         }
-        throw new Error("Project root not found");
+        // If we've reached here, we couldn't find a package.json
+        // So we'll return the current working directory as a fallback
+        return process.cwd();
     }
     static getRelativePath(fullPath) {
         const projectRoot = this.findProjectRoot();
