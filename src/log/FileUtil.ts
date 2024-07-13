@@ -18,7 +18,7 @@ class FileUtils {
   // Method to get the log file path
   static getLogFilePath(): string | null {
     const projectRoot = this.findProjectRoot();
-    return projectRoot ? path.join(projectRoot, "package.log") : null;
+    return projectRoot ? path.join(projectRoot, "bugprompt.log") : null;
   }
 
   // Trims the log file to prevent it from growing indefinitely

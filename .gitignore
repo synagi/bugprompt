@@ -38,6 +38,7 @@ dist
 bin
 *.log
 bugprompt.json
+bugprompt.log
 
 .vscode
 
