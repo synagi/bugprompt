@@ -33,10 +33,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# project created files
+# bugprompt
+dist
 bin
 *.log
+bugprompt.json
 
 .vscode
 
-dist
+

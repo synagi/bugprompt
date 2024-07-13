@@ -9,7 +9,6 @@
   "files": [
     "src",
     "dist",
-    "config.docs.json",
     "tsconfig.json"
   ],
   "scripts": {
