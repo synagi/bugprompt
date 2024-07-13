@@ -27,32 +27,18 @@ class ErrorUtil {
   // Asynch (non-blocking) entry-point for general use in production
   static async convertError(
     error: Error | string,
-    monorepoRoot: string | null = null,
-    workspacePaths: string[] | null = null,
     newCode: any = null,
   ): Promise<ErrorObject> {
-    let errorObject = await this._processError(
-      error,
-      monorepoRoot,
-      workspacePaths,
-      newCode,
-    );
+    let errorObject = await this._processError(error, newCode);
     return this._formatErrorObject(errorObject);
   }
 
   // Synchronous version, e.g. for global unhandled errors and rejections on process exit
   static convertErrorSync(
     error: Error | string,
-    monorepoRoot: string | null = null,
-    workspacePaths: string[] | null = null,
     newCode: any = null,
   ): ErrorObject {
-    let errorObject = this._processErrorSync(
-      error,
-      monorepoRoot,
-      workspacePaths,
-      newCode,
-    );
+    let errorObject = this._processErrorSync(error, newCode);
     return this._formatErrorObject(errorObject);
   }
 
@@ -68,22 +54,14 @@ class ErrorUtil {
   // Asynchronous version of _processError
   private static async _processError(
     error: Error | string,
-    monorepoRoot: string | null,
-    workspacePaths: string[] | null,
     newCode: any,
   ): Promise<ErrorProps> {
-    const {
-      errorProps,
-      monorepoRoot: updatedMonorepoRoot,
-      workspacePaths: updatedWorkspacePaths,
-    } = this._sharedProcessErrorLogic(error, monorepoRoot, workspacePaths);
+    const errorProps = this._sharedProcessErrorLogic(error);
 
     // Fetch lines of code asynchronously
     if (Array.isArray(errorProps.stack)) {
       errorProps.stack = await this._fetchLinesOfCode(
         errorProps.stack,
-        updatedMonorepoRoot,
-        updatedWorkspacePaths,
         newCode,
       );
     }
@@ -93,49 +71,26 @@ class ErrorUtil {
   // Synchronous version of _processError
   private static _processErrorSync(
     error: Error | string,
-    monorepoRoot: string | null,
-    workspacePaths: string[] | null,
     newCode: any,
   ): ErrorProps {
-    const {
-      errorProps,
-      monorepoRoot: updatedMonorepoRoot,
-      workspacePaths: updatedWorkspacePaths,
-    } = this._sharedProcessErrorLogic(error, monorepoRoot, workspacePaths);
+    const errorProps = this._sharedProcessErrorLogic(error);
 
     // Ensure that errorProps.stack is always an array
     if (Array.isArray(errorProps.stack)) {
-      errorProps.stack = this._fetchLinesOfCodeSync(
-        errorProps.stack,
-        updatedMonorepoRoot,
-        updatedWorkspacePaths,
-        newCode,
-      );
+      errorProps.stack = this._fetchLinesOfCodeSync(errorProps.stack, newCode);
     }
     return errorProps;
   }
 
   // Shared logic between sync / async _processError functions
-  private static _sharedProcessErrorLogic(
-    error: Error | string,
-    monorepoRoot: string | null,
-    workspacePaths: string[] | null,
-  ): {
-    errorProps: ErrorProps;
-    monorepoRoot: string | null;
-    workspacePaths: string[] | null;
-  } {
+  private static _sharedProcessErrorLogic(error: Error | string): ErrorProps {
     // Handling string errors (or non-Error objects)
     if (typeof error === "string") {
       return {
-        errorProps: {
-          name: "DevErrorMessage",
-          message: error,
-          stack: "No stack trace available for string-based errors",
-          params: "",
-        },
-        monorepoRoot,
-        workspacePaths,
+        name: "DevErrorMessage",
+        message: error,
+        stack: "No stack trace available for string-based errors",
+        params: "",
       };
     }
 
@@ -172,33 +127,17 @@ class ErrorUtil {
       errorProps.stack !== "No stack trace provided" &&
       errorProps.stack.length > 0
     ) {
-      // Add this check
-      if (!monorepoRoot || !workspacePaths) {
-        monorepoRoot = ProjectUtil.getMonorepoRoot();
-        workspacePaths = ProjectUtil.getWorkspacePaths();
-      }
-
       if (typeof errorProps.stack === "string") {
-        let parsedStack =
-          this._parseStackTrace(
-            errorProps.stack,
-            monorepoRoot,
-            workspacePaths,
-          ) || [];
+        let parsedStack = this._parseStackTrace(errorProps.stack) || [];
         let projectStack = this._extractProjectStack(parsedStack) || [];
-        let filteredProjectStack =
-          this._filterProjectStack(
-            projectStack,
-            monorepoRoot,
-            workspacePaths,
-          ) || [];
+        let filteredProjectStack = this._filterProjectStack(projectStack) || [];
         errorProps.stack = filteredProjectStack;
       }
     } else {
       errorProps.stack = []; // Ensure it's an empty array if no stack trace
     }
 
-    return { errorProps, monorepoRoot, workspacePaths };
+    return errorProps;
   }
 
   private static _replacer(_key: string, value: any): any {
@@ -210,8 +149,6 @@ class ErrorUtil {
 
   private static _parseStackTrace(
     stack: string,
-    monorepoRoot: string | null,
-    workspacePaths: string[] | null,
   ): { type: string; line: string }[] {
     if (!stack) {
       return [];
@@ -244,9 +181,7 @@ class ErrorUtil {
         }
 
         // Check for project lines
-        if (
-          ProjectUtil.isLineInProject(trimmedLine, monorepoRoot, workspacePaths)
-        ) {
+        if (ProjectUtil.isLineInProject(trimmedLine)) {
           return { type: "project", line: trimmedLine };
         }
 
@@ -273,17 +208,11 @@ class ErrorUtil {
 
   private static _filterProjectStack(
     parsedProjectStack: { type: string; line: string }[],
-    monorepoRoot: string | null,
-    workspacePaths: string[] | null,
   ): StackEntry[] {
     let processedStack: StackEntry[] = [];
 
     for (const stackLineObject of parsedProjectStack) {
-      const processedLine = StackTraceUtil.processStackLine(
-        stackLineObject,
-        monorepoRoot,
-        workspacePaths,
-      );
+      const processedLine = StackTraceUtil.processStackLine(stackLineObject);
       if (processedLine) {
         processedStack.push(processedLine);
       }
@@ -294,8 +223,6 @@ class ErrorUtil {
 
   private static async _fetchLinesOfCode(
     filteredProjectStack: StackEntry[],
-    monorepoRoot: string | null,
-    workspacePaths: string[] | null,
     newCode: any[] | null = null,
   ): Promise<StackEntry[]> {
     // Ensure that filteredProjectStack is always an array
@@ -321,11 +248,7 @@ class ErrorUtil {
         }
 
         // Fallback to async file reading logic
-        const absoluteFilePath = ProjectUtil.getAbsoluteFilePath(
-          entry.file,
-          monorepoRoot,
-          workspacePaths,
-        );
+        const absoluteFilePath = ProjectUtil.getAbsoluteFilePath(entry.file);
         if (!fs.existsSync(absoluteFilePath)) {
           return { ...entry, code: "<no-data>" };
         }
@@ -350,8 +273,6 @@ class ErrorUtil {
 
   private static _fetchLinesOfCodeSync(
     filteredProjectStack: StackEntry[],
-    monorepoRoot: string | null,
-    workspacePaths: string[] | null,
     newCode: any[] | null = null,
   ): StackEntry[] {
     // Ensure that filteredProjectStack is always an array
@@ -376,11 +297,7 @@ class ErrorUtil {
       }
 
       // Fallback to sync file reading logic
-      const absoluteFilePath = ProjectUtil.getAbsoluteFilePath(
-        entry.file,
-        monorepoRoot,
-        workspacePaths,
-      );
+      const absoluteFilePath = ProjectUtil.getAbsoluteFilePath(entry.file);
       if (!fs.existsSync(absoluteFilePath)) {
         return { ...entry, code: "<no-data>" };
       }

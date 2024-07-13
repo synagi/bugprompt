@@ -2,7 +2,7 @@ declare class StackTraceUtil {
     private static _uniqueEntries;
     static processStackLine(stackLineObject: {
         line: string;
-    }, monorepoRoot: string | null, workspacePaths: string[] | null): {
+    }): {
         file: string;
         line: number;
         at: string;

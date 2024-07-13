@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
 import { globSync } from "glob";
-import ProjectUtil from "../utils/ProjectUtil.js";
 import FileProcessor from "./FileProcessor.js";
 import FileUtils from "../log/FileUtil.js";
 
@@ -46,21 +45,15 @@ interface SanitizePair {
 
 class DocsBuilder {
   private config: Config;
-  private monorepoRoot: string;
+  private projectRoot: string;
 
   constructor(config: Config) {
     this.validateConfig(config);
     this.config = config;
-    this.monorepoRoot = "";
+    this.projectRoot = FileUtils.findProjectRoot() || process.cwd();
   }
 
-  async init(): Promise<void> {
-    const root = ProjectUtil.getMonorepoRoot();
-    if (root === null) {
-      throw new Error("Monorepo root not found");
-    }
-    this.monorepoRoot = root;
-  }
+  async init(): Promise<void> {}
 
   private validateConfig(config: Config): void {
     if (
@@ -98,10 +91,7 @@ class DocsBuilder {
     await this.init();
 
     const outputBaseDir = this.config.outputDir || "bin/docs";
-    const projectRoot = FileUtils.findProjectRoot();
-    const outputDir = projectRoot
-      ? path.join(projectRoot, outputBaseDir)
-      : outputBaseDir;
+    const outputDir = path.join(this.projectRoot, outputBaseDir);
 
     await this.ensureDirectoryExistence(outputDir);
 
@@ -186,8 +176,8 @@ class DocsBuilder {
     }
 
     const projectRoot = contentItem.root
-      ? path.join(this.monorepoRoot, contentItem.root)
-      : this.monorepoRoot;
+      ? path.join(this.projectRoot, contentItem.root)
+      : this.projectRoot;
     let content = "";
 
     if (contentItem.title) {
@@ -273,7 +263,7 @@ class DocsBuilder {
     const includeRelativePath = contentItem.headerRelativePath !== false;
 
     if (includeRootPath) {
-      header += path.relative(this.monorepoRoot, projectRoot);
+      header += path.relative(this.projectRoot, projectRoot);
     }
     if (includeRelativePath) {
       header += includeRootPath ? "/" : "";

@@ -16,8 +16,8 @@ interface ErrorObject {
     formatted: string;
 }
 declare class ErrorUtil {
-    static convertError(error: Error | string, monorepoRoot?: string | null, workspacePaths?: string[] | null, newCode?: any): Promise<ErrorObject>;
-    static convertErrorSync(error: Error | string, monorepoRoot?: string | null, workspacePaths?: string[] | null, newCode?: any): ErrorObject;
+    static convertError(error: Error | string, newCode?: any): Promise<ErrorObject>;
+    static convertErrorSync(error: Error | string, newCode?: any): ErrorObject;
     private static _formatErrorObject;
     private static _processError;
     private static _processErrorSync;

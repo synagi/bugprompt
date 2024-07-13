@@ -34,7 +34,7 @@ interface SanitizePair {
 }
 declare class DocsBuilder {
     private config;
-    private monorepoRoot;
+    private projectRoot;
     constructor(config: Config);
     init(): Promise<void>;
     private validateConfig;
