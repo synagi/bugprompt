@@ -9,6 +9,7 @@ class DocsBuilder {
         this.config = config;
         this.projectRoot = ProjectUtil.findProjectRoot();
         console.log(`DocsBuilder initialized with projectRoot: ${this.projectRoot}`);
+        console.log(`Config:`, JSON.stringify(this.config, null, 2));
     }
     async init() { }
     validateConfig(config) {

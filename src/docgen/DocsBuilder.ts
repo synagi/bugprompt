@@ -54,6 +54,7 @@ class DocsBuilder {
     console.log(
       `DocsBuilder initialized with projectRoot: ${this.projectRoot}`,
     );
+    console.log(`Config:`, JSON.stringify(this.config, null, 2));
   }
 
   async init(): Promise<void> {}
