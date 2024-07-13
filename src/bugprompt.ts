@@ -11,7 +11,6 @@ class Bugprompt {
 
   private constructor() {
     this._config = new Config();
-    this.StackTracer.enable(); // This now sets up global error handlers
   }
 
   public static getInstance(): Bugprompt {
@@ -27,10 +26,13 @@ class Bugprompt {
   }
 
   private applyConfig(): void {
-    if (this._config.log.enabled) {
-      LoggerWrapper.enable();
+    if (this._config.stacktrace?.enabled) {
+      this.StackTracer.enable();
     }
-    // StackTracer is already enabled in the constructor
+
+    if (this._config.log?.enabled) {
+      this.LoggerWrapper.enable();
+    }
   }
 }
 

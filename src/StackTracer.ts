@@ -1,4 +1,4 @@
-import ErrorUtil, { ErrorObject } from "./utils/ErrorUtil.js";
+import ErrorUtil, { ErrorObject, ErrorProps } from "./utils/ErrorUtil.js";
 
 export interface IStackTracer {
   enable(): void;
@@ -39,29 +39,51 @@ class StackTracer implements IStackTracer {
 
   private setupGlobalHandlers(): void {
     process.on("uncaughtException", (error) => {
-      console.error(
-        "Uncaught Exception:",
-        this.processErrorSync(error).formatted,
-      );
+      if (this._enabled) {
+        console.error(
+          "Uncaught Exception:",
+          this.processErrorSync(error).formatted,
+        );
+      }
       process.exit(1);
     });
 
     process.on("unhandledRejection", (reason) => {
-      console.error(
-        "Unhandled Rejection:",
-        this.processErrorSync(
-          reason instanceof Error ? reason : new Error(String(reason)),
-        ).formatted,
-      );
+      if (this._enabled) {
+        console.error(
+          "Unhandled Rejection:",
+          this.processErrorSync(
+            reason instanceof Error ? reason : new Error(String(reason)),
+          ).formatted,
+        );
+      }
       process.exit(1);
     });
   }
 
   async processError(error: Error | string): Promise<ErrorObject> {
+    if (!this._enabled) {
+      const errorProps: ErrorProps = {
+        name: "Error",
+        message: error.toString(),
+        stack: "",
+        params: "",
+      };
+      return { error: errorProps, log: "", formatted: error.toString() };
+    }
     return ErrorUtil.convertError(error);
   }
 
   processErrorSync(error: Error | string): ErrorObject {
+    if (!this._enabled) {
+      const errorProps: ErrorProps = {
+        name: "Error",
+        message: error.toString(),
+        stack: "",
+        params: "",
+      };
+      return { error: errorProps, log: "", formatted: error.toString() };
+    }
     return ErrorUtil.convertErrorSync(error);
   }
 }

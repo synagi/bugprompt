@@ -1,3 +1,4 @@
+// test1.js
 import bugprompt from "./dist/index.js";
 
 // Configure bugprompt
