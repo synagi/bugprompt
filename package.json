@@ -16,7 +16,7 @@
     "build": "npm run format && npm run clean && tsc -b",
     "test": "npm run build && node test.mjs",
     "docs": "npm run build && rm -rfv ./bin/docs && node ./dist/docgen/genDocs.js",
-    "postinstall": "npm run build"
+    "postinstall": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "glob": "^11.0.0"
