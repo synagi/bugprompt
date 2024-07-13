@@ -2,8 +2,8 @@
   "outputDir": "bin/docs",
   "templates": [
     {
-      "name": "template name",
-      "header": "# Source code\nBelow is the latest source code of the project, analyze it directly to understand the latest code and its structure:",
+      "name": "default",
+      "header": "# Source code\nBelow is the latest source code of the project, showing the contents of each file along with it's relative path.  Analyze it directly to understand the latest code and its structure:",
       "footer": ""
     }
   ],
@@ -15,19 +15,42 @@
   ],
   "documents": [
     {
-      "fileName": "nodejs util",
+      "fileName": "Project Code",
+      "minificationLevel": 0,
+      "templateName": "default",
+      "content": [
+        {
+          "title": "projectname",
+          "description": "Any important project details or gotchas go here...",
+          "headerPrefix": "##",
+          "root": "",
+          "include": [
+            "**/*.ts",
+            "**/*.d.ts",
+            "**/*.js",
+            "**/*.cjs",
+            "**/*.mjs",
+            "**/*.json",
+            "**/*.tsx",
+            "**/*.jsx"
+          ],
+          "exclude": [
+            "node_modules/**/*",
+            "dist/**/*",
+            "bin/**/*",
+            "package-lock.json"
+          ]
+        }
+      ]
+    },
+    {
+      "fileName": "Project Code Min",
       "minificationLevel": 2,
       "content": [
         {
-          "title": "nodejs-util",
-          "description": "sdk",
-          "headerPrefix": "# ",
-          "useCodeblocks": true,
-          "headerRootPath": false,
-          "headerRelativePath": true,
-          "root": "",
-          "include": ["**/*.*"],
-          "exclude": ["node_modules/**/*", "dist/**/*", "package-lock.json"]
+          "reference": "projectname",
+          "headerPrefix": "// .",
+          "useCodeblocks": false
         }
       ]
     }
