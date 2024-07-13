@@ -1,0 +1,35 @@
+{
+  "outputDir": "bin/docs",
+  "templates": [
+    {
+      "name": "template name",
+      "header": "# Source code\nBelow is the latest source code of the project, analyze it directly to understand the latest code and its structure:",
+      "footer": ""
+    }
+  ],
+  "sanitize": [
+    {
+      "keyword": "<some private string>",
+      "replace": "<redacted>"
+    }
+  ],
+  "documents": [
+    {
+      "fileName": "nodejs util",
+      "minificationLevel": 2,
+      "content": [
+        {
+          "title": "nodejs-util",
+          "description": "sdk",
+          "headerPrefix": "# ",
+          "useCodeblocks": true,
+          "headerRootPath": false,
+          "headerRelativePath": true,
+          "root": "src",
+          "include": ["**/*.ts"],
+          "exclude": ["package-lock.json"]
+        }
+      ]
+    }
+  ]
+}

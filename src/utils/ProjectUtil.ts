@@ -20,30 +20,24 @@ class ProjectUtil {
   }
 
   static getMonorepoRoot(): string | null {
-    if (this.monorepoRoot !== null) {
-      return this.monorepoRoot;
-    }
-
     let currentDir = path.dirname(fileURLToPath(import.meta.url));
     while (currentDir !== path.parse(currentDir).root) {
       const packageJsonPath = path.join(currentDir, "package.json");
       if (fs.existsSync(packageJsonPath)) {
-        try {
-          const packageJson = JSON.parse(
-            fs.readFileSync(packageJsonPath, "utf8"),
-          );
-          if (packageJson.workspaces) {
-            this.monorepoRoot = currentDir;
-            return currentDir;
-          }
-        } catch (error) {
-          // Ignore the error as it means package.json doesn't exist in this directory
+        const packageJson = JSON.parse(
+          fs.readFileSync(packageJsonPath, "utf8"),
+        );
+        // Check if it's a monorepo by looking for workspaces attribute
+        if (packageJson.workspaces) {
+          this.monorepoRoot = currentDir;
+          return currentDir;
         }
+        // If not a monorepo, return the current directory as the root
+        return currentDir;
       }
       currentDir = path.dirname(currentDir);
     }
-
-    return null; // Indicate that a monorepo root was not found
+    return null; // Fallback if no package.json is found
   }
 
   static getWorkspacePaths(): string[] {

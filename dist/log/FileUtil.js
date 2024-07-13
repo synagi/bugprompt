@@ -3,14 +3,15 @@ import path from "path";
 class FileUtils {
     // Method to find the project root by searching for package.json
     static findProjectRoot(currentDir = process.cwd()) {
-        while (currentDir !== path.parse(currentDir).root) {
-            const packageJsonPath = path.join(currentDir, "package.json");
+        let directory = currentDir;
+        while (directory !== path.parse(directory).root) {
+            const packageJsonPath = path.join(directory, "package.json");
             if (fs.existsSync(packageJsonPath)) {
-                return currentDir; // Return the directory containing package.json
+                return directory; // Return the directory containing package.json
             }
-            currentDir = path.dirname(currentDir);
+            directory = path.dirname(directory); // Move up a directory level
         }
-        return null;
+        return null; // No project root found
     }
     // Method to get the log file path
     static getLogFilePath() {
