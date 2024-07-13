@@ -7,13 +7,13 @@
   "license": "MIT",
   "main": "dist/index.js",
   "files": [
-    "dist",
-    "config.docs.json"
+    "config.docs.json",
+    "tsconfig.json"
   ],
   "scripts": {
     "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
     "clean": "rm -rf dist/ *.tsbuildinfo",
-    "build": "npm run clean && tsc -p tsconfig.json",
+    "build": "npm run clean && tsc -p ./tsconfig.json",
     "test": "npm run build && node test.mjs",
     "docs": "npm run build && rm -rfv ./bin/docs && node ./dist/docgen/genDocs.js",
     "postinstall": "npm run build"
