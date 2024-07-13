@@ -15,7 +15,8 @@
     "clean": "tsc -b --clean && rm -rf dist/ *.tsbuildinfo",
     "build": "npm run format && npm run clean && tsc -b",
     "test": "npm run build && node test.mjs",
-    "docs": "npm run build && rm -rfv ./bin/docs && node ./dist/docgen/genDocs.js"
+    "docs": "npm run build && rm -rfv ./bin/docs && node ./dist/docgen/genDocs.js",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "glob": "^11.0.0"
