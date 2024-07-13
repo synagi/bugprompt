@@ -6,23 +6,34 @@ class ProjectUtil {
   static findProjectRoot(currentDir: string = process.cwd()): string {
     let directory = currentDir;
     let lastDirectory = "";
+    let foundNodeModules = false;
+
     while (directory !== lastDirectory) {
       if (fs.existsSync(path.join(directory, "package.json"))) {
-        const projectName = FileUtil.getProjectName();
+        const packageJsonPath = path.join(directory, "package.json");
+        const packageJson = JSON.parse(
+          fs.readFileSync(packageJsonPath, "utf8"),
+        );
 
-        // Check if this is the nodejs-util package
-        if (projectName === FileUtil.getProjectName()) {
-          // If it's the nodejs-util package, return its directory
+        if (packageJson.name === FileUtil.getProjectName()) {
+          // If it's the nodejs-util package itself
           return directory;
-        } else {
-          // If it's not nodejs-util, this is the project root we want
+        } else if (foundNodeModules) {
+          // If we've passed through node_modules, this is the root of the project using nodejs-util
           return directory;
         }
+        // If neither condition is met, continue searching upwards
       }
+
+      if (path.basename(directory) === "node_modules") {
+        foundNodeModules = true;
+      }
+
       lastDirectory = directory;
       directory = path.dirname(directory);
     }
-    // If we've reached here, we couldn't find a package.json
+
+    // If we've reached here, we couldn't find a suitable root
     // So we'll return the current working directory as a fallback
     return process.cwd();
   }
