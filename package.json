@@ -12,19 +12,19 @@
   ],
   "scripts": {
     "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
-    "clean": "tsc -b --clean && rm -rf dist/ *.tsbuildinfo",
-    "build": "npm run format && npm run clean && tsc -b",
+    "clean": "tsc -p tsconfig.json --clean && rm -rf dist/ *.tsbuildinfo",
+    "build": "npm run clean && tsc -p tsconfig.json",
     "test": "npm run build && node test.mjs",
     "docs": "npm run build && rm -rfv ./bin/docs && node ./dist/docgen/genDocs.js",
-    "postinstall": "tsc -p tsconfig.json"
+    "postinstall": "npm run build"
   },
   "dependencies": {
-    "glob": "^11.0.0"
+    "glob": "^11.0.0",
+    "typescript": "^5.5.3"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/node": "^20.14.10",
-    "prettier": "^3.3.2",
-    "typescript": "^5.5.3"
+    "prettier": "^3.3.2"
   }
 }
