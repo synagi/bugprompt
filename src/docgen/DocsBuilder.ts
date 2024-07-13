@@ -51,6 +51,9 @@ class DocsBuilder {
     this.validateConfig(config);
     this.config = config;
     this.projectRoot = ProjectUtil.findProjectRoot();
+    console.log(
+      `DocsBuilder initialized with projectRoot: ${this.projectRoot}`,
+    );
   }
 
   async init(): Promise<void> {}
@@ -92,10 +95,12 @@ class DocsBuilder {
 
     const outputBaseDir = this.config.outputDir || "bin/docs";
     const outputDir = path.join(this.projectRoot, outputBaseDir);
+    console.log(`Output directory: ${outputDir}`);
 
     await this.ensureDirectoryExistence(outputDir);
 
     for (const document of this.config.documents) {
+      console.log(`Processing document: ${document.fileName}`);
       let documentationContent = await this.processDocument(document);
       if (this.config.sanitize && Array.isArray(this.config.sanitize)) {
         documentationContent = this.sanitizeContent(
@@ -121,6 +126,7 @@ class DocsBuilder {
   }
 
   private async processDocument(document: Document): Promise<string> {
+    console.log(`Processing document: ${document.fileName}`);
     let documentationContent = "";
 
     let template: Template | null = null;
@@ -163,6 +169,9 @@ class DocsBuilder {
     processedFiles: Set<string>,
     processor: FileProcessor,
   ): Promise<string> {
+    console.log(
+      `Processing content item with include patterns: ${contentItem.include}`,
+    );
     if (contentItem.reference) {
       const referencedItem = this.findReferencedContentItem(
         contentItem.reference,

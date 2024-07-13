@@ -3,31 +3,33 @@ import path from "path";
 import FileUtil from "../log/FileUtil.js";
 class ProjectUtil {
     static findProjectRoot(currentDir = process.cwd()) {
+        console.log(`ProjectUtil.findProjectRoot called with currentDir: ${currentDir}`);
         let directory = currentDir;
         let lastDirectory = "";
         let foundNodeModules = false;
         while (directory !== lastDirectory) {
+            console.log(`Checking directory: ${directory}`);
             if (fs.existsSync(path.join(directory, "package.json"))) {
                 const packageJsonPath = path.join(directory, "package.json");
                 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+                console.log(`Found package.json with name: ${packageJson.name}`);
                 if (packageJson.name === FileUtil.getProjectName()) {
-                    // If it's the nodejs-util package itself
+                    console.log(`Matched project name. Returning directory: ${directory}`);
                     return directory;
                 }
                 else if (foundNodeModules) {
-                    // If we've passed through node_modules, this is the root of the project using nodejs-util
+                    console.log(`Passed through node_modules. Returning directory: ${directory}`);
                     return directory;
                 }
-                // If neither condition is met, continue searching upwards
             }
             if (path.basename(directory) === "node_modules") {
+                console.log(`Found node_modules directory: ${directory}`);
                 foundNodeModules = true;
             }
             lastDirectory = directory;
             directory = path.dirname(directory);
         }
-        // If we've reached here, we couldn't find a suitable root
-        // So we'll return the current working directory as a fallback
+        console.log(`No suitable root found. Returning current working directory: ${process.cwd()}`);
         return process.cwd();
     }
     static getRelativePath(fullPath) {
