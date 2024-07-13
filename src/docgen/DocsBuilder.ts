@@ -3,6 +3,7 @@ import path from "path";
 import { globSync } from "glob";
 import ProjectUtil from "../utils/ProjectUtil.js";
 import FileProcessor from "./FileProcessor.js";
+import FileUtils from "../log/FileUtil.js";
 
 interface Config {
   documents: Document[];
@@ -97,20 +98,21 @@ class DocsBuilder {
     await this.init();
 
     const outputBaseDir = this.config.outputDir || "bin/docs";
-    const outputDir = path.join(this.monorepoRoot, outputBaseDir);
+    const projectRoot = FileUtils.findProjectRoot();
+    const outputDir = projectRoot
+      ? path.join(projectRoot, outputBaseDir)
+      : outputBaseDir;
 
     await this.ensureDirectoryExistence(outputDir);
 
     for (const document of this.config.documents) {
       let documentationContent = await this.processDocument(document);
-
       if (this.config.sanitize && Array.isArray(this.config.sanitize)) {
         documentationContent = this.sanitizeContent(
           documentationContent,
           this.config.sanitize,
         );
       }
-
       await this.writeDocumentation(outputDir, document, documentationContent);
     }
   }
