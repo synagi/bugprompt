@@ -1,29 +1,37 @@
 import fs from "fs";
 import path from "path";
-import FileUtil from "../log/FileUtil.js";
 
 class ProjectUtil {
+  static getProjectName(): string | null {
+    let currentDir = process.cwd();
+    while (currentDir !== path.parse(currentDir).root) {
+      try {
+        const packageJsonPath = path.join(currentDir, "package.json");
+        const packageJsonRaw = fs.readFileSync(packageJsonPath, "utf8");
+        const packageJson = JSON.parse(packageJsonRaw);
+        return packageJson.name;
+      } catch (error) {
+        // Move to the parent directory and try again
+        currentDir = path.dirname(currentDir);
+      }
+    }
+    console.warn("Unable to find package.json in any parent directory.");
+    return null;
+  }
+
   static findProjectRoot(currentDir: string = process.cwd()): string {
-    console.log(
-      `ProjectUtil.findProjectRoot called with currentDir: ${currentDir}`,
-    );
     let directory = currentDir;
     let lastDirectory = "";
     let foundNodeModules = false;
 
     while (directory !== lastDirectory) {
-      console.log(`Checking directory: ${directory}`);
       if (fs.existsSync(path.join(directory, "package.json"))) {
         const packageJsonPath = path.join(directory, "package.json");
         const packageJson = JSON.parse(
           fs.readFileSync(packageJsonPath, "utf8"),
         );
-        console.log(`Found package.json with name: ${packageJson.name}`);
 
-        if (packageJson.name === FileUtil.getProjectName()) {
-          console.log(
-            `Matched project name. Returning directory: ${directory}`,
-          );
+        if (packageJson.name === this.getProjectName()) {
           return directory;
         } else if (foundNodeModules) {
           console.log(

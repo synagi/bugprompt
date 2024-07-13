@@ -1,11 +1,10 @@
 import ErrorUtils from "../utils/ErrorUtil.js";
 import FileUtils from "./FileUtil.js";
 import EnvironmentUtils from "../utils/EnvUtil.js";
+import ProjectUtils from "../utils/ProjectUtil.js";
 
-// Constants for the logger
-const MAX_FILE_SIZE_MB = 1; // 1 MB in bytes
+const MAX_FILE_SIZE_MB = 10;
 
-// Mapping from log levels to emojis
 const LOG_LEVEL_EMOJIS: { [key: string]: string } = {
   info: "ℹ️",
   warn: "⚠️",
@@ -27,7 +26,7 @@ class Logger {
     this.isNode = EnvironmentUtils.isNodeEnvironment();
     this.maxFileSize = MAX_FILE_SIZE_MB * 1024 * 1024;
     this.projectName = this.isNode
-      ? projectName || FileUtils.getProjectName() || "Unknown_Project"
+      ? projectName || ProjectUtils.getProjectName() || "Unknown_Project"
       : projectName || "NON-NODEJS";
 
     this.setupGlobalErrorHandlers();
@@ -40,12 +39,10 @@ class Logger {
     return Logger.instance;
   }
 
-  // Private method to format a log entry for file
   private formatLogEntry(level: LogLevel, message: string): string {
     return `${LOG_LEVEL_EMOJIS[level]}[${this.projectName}] [${level.toUpperCase()}]: ${message}`;
   }
 
-  // Private method to log messages from normal code (i.e. async)
   private async log(level: LogLevel, ...messages: any[]): Promise<void> {
     let consoleLevel: "log" | "warn" | "error" | "debug" | "trace" =
       level === "exception" ? "error" : (level as any);
@@ -82,7 +79,7 @@ class Logger {
     }
   }
 
-  // Public methods for different log levels
+  // log levels
   public async info(...messages: any[]): Promise<void> {
     await this.log("info", ...messages);
   }
@@ -102,7 +99,7 @@ class Logger {
     await this.log("exception", ...messages);
   }
 
-  // Sync methods exclusively for global unhandled errors and rejections
+  // Sync methods for global unhandled errors and rejections
   private logSync(level: LogLevel, ...messages: any[]): void {
     let consoleLevel: "log" | "warn" | "error" | "debug" | "trace" =
       level === "exception" ? "error" : (level as any);
@@ -112,7 +109,7 @@ class Logger {
       if (msg instanceof Error) {
         const errorData = ErrorUtils.convertErrorSync(msg);
         formattedMessages.push(errorData.log);
-        console.error(errorData.formatted); // Use console.error for exceptions
+        console.error(errorData.formatted);
       } else {
         formattedMessages.push(String(msg));
         console[consoleLevel](msg);

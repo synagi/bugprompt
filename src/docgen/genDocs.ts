@@ -6,7 +6,7 @@ import FileUtils from "../log/FileUtil.js";
 // Config file name constant
 const CONFIG_FILE_NAME = "bugprompt.json";
 
-// Default configuration
+// Default configuration, created in root if missing
 const DEFAULT_CONFIG = {
   outputDir: "bin/",
   templates: [
