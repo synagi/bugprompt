@@ -40,8 +40,8 @@ declare class DocsBuilder {
     private validateConfig;
     private ensureDirectoryExistence;
     build(): Promise<void>;
-    private processDocument;
     private findReferencedContentItem;
+    private processDocument;
     private processContentItem;
     private isFileExcluded;
     private processFile;

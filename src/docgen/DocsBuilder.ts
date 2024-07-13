@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import glob from "glob-promise";
+import { globSync } from "glob";
 import ProjectUtil from "../utils/ProjectUtil.js";
 import FileProcessor from "./FileProcessor.js";
 
@@ -115,6 +115,19 @@ class DocsBuilder {
     }
   }
 
+  private findReferencedContentItem(
+    referenceTitle: string,
+  ): ContentItem | null {
+    for (const document of this.config.documents) {
+      for (const item of document.content) {
+        if (item.title === referenceTitle) {
+          return item;
+        }
+      }
+    }
+    return null;
+  }
+
   private async processDocument(document: Document): Promise<string> {
     let documentationContent = "";
 
@@ -124,6 +137,7 @@ class DocsBuilder {
         this.config.templates?.find((t) => t.name === document.templateName) ||
         null;
       if (!template) {
+        console.error(`Template named '${document.templateName}' not found.`);
         throw new Error(`Template named '${document.templateName}' not found.`);
       }
       if (template.header) {
@@ -136,6 +150,7 @@ class DocsBuilder {
     const processor = new FileProcessor(minificationLevel);
 
     for (const contentItem of document.content) {
+      console.log(`Processing content for title: ${contentItem.title}`);
       const fileContents = await this.processContentItem(
         contentItem,
         processedFiles,
@@ -149,19 +164,6 @@ class DocsBuilder {
     }
 
     return documentationContent;
-  }
-
-  private findReferencedContentItem(
-    referenceTitle: string,
-  ): ContentItem | null {
-    for (const document of this.config.documents) {
-      for (const item of document.content) {
-        if (item.title === referenceTitle) {
-          return item;
-        }
-      }
-    }
-    return null;
   }
 
   private async processContentItem(
@@ -184,7 +186,6 @@ class DocsBuilder {
     const projectRoot = contentItem.root
       ? path.join(this.monorepoRoot, contentItem.root)
       : this.monorepoRoot;
-
     let content = "";
 
     if (contentItem.title) {
@@ -202,22 +203,23 @@ class DocsBuilder {
     }
 
     for (const pattern of contentItem.include) {
-      const files = await glob(pattern, { cwd: projectRoot, nodir: true });
+      const files = globSync(pattern, { cwd: projectRoot, nodir: true });
+
       for (const file of files) {
         const fullPath = path.join(projectRoot, file);
         if (
-          processedFiles.has(fullPath) ||
-          this.isFileExcluded(fullPath, contentItem.exclude, projectRoot)
+          !processedFiles.has(fullPath) &&
+          !this.isFileExcluded(fullPath, contentItem.exclude, projectRoot)
         ) {
-          continue;
+          processedFiles.add(fullPath);
+          const fileContent = await this.processFile(
+            fullPath,
+            processor,
+            contentItem,
+            projectRoot,
+          );
+          content += fileContent;
         }
-        processedFiles.add(fullPath);
-        content += await this.processFile(
-          fullPath,
-          processor,
-          contentItem,
-          projectRoot,
-        );
       }
     }
     return content;
@@ -301,7 +303,6 @@ class DocsBuilder {
     }
 
     let sanitizedFileName = document.fileName.split(" ").join("_");
-
     const outputFileName = path.join(outputDir, `${sanitizedFileName}.md`);
 
     try {

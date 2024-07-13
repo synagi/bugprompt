@@ -10,15 +10,17 @@
     "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
     "clean": "tsc -b --clean && rm -rf dist/ *.tsbuildinfo",
     "build": "npm run format && npm run clean && tsc -b",
-    "docs": "rm -rfv ./bin/docs && node ./dist/docgen/genDocs.js"
+    "test": "npm run build && node test.mjs",
+    "docs": "npm run build && rm -rfv ./bin/docs && node ./dist/docgen/genDocs.js"
   },
   "bin": {
     "gendocs": "./dist/docgen/genDocs.js"
   },
   "dependencies": {
-    "glob-promise": "^6.0.7"
+    "glob": "^11.0.0"
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
     "@types/node": "^20.14.10",
     "prettier": "^3.3.2",
     "typescript": "^5.5.3"

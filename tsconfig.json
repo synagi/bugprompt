@@ -24,6 +24,7 @@
     "strictPropertyInitialization": true,
     "target": "ES2021",
     "types": ["node"],
+    "typeRoots": ["./node_modules/@types"],
     "outDir": "./dist",
     "rootDir": "./src"
   },

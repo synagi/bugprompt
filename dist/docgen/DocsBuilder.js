@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import glob from "glob-promise";
+import { globSync } from "glob";
 import ProjectUtil from "../utils/ProjectUtil.js";
 import FileProcessor from "./FileProcessor.js";
 class DocsBuilder {
@@ -56,6 +56,16 @@ class DocsBuilder {
             await this.writeDocumentation(outputDir, document, documentationContent);
         }
     }
+    findReferencedContentItem(referenceTitle) {
+        for (const document of this.config.documents) {
+            for (const item of document.content) {
+                if (item.title === referenceTitle) {
+                    return item;
+                }
+            }
+        }
+        return null;
+    }
     async processDocument(document) {
         let documentationContent = "";
         let template = null;
@@ -64,6 +74,7 @@ class DocsBuilder {
                 this.config.templates?.find((t) => t.name === document.templateName) ||
                     null;
             if (!template) {
+                console.error(`Template named '${document.templateName}' not found.`);
                 throw new Error(`Template named '${document.templateName}' not found.`);
             }
             if (template.header) {
@@ -74,6 +85,7 @@ class DocsBuilder {
         const minificationLevel = document.minificationLevel || 0;
         const processor = new FileProcessor(minificationLevel);
         for (const contentItem of document.content) {
+            console.log(`Processing content for title: ${contentItem.title}`);
             const fileContents = await this.processContentItem(contentItem, processedFiles, processor);
             documentationContent += fileContents;
         }
@@ -81,16 +93,6 @@ class DocsBuilder {
             documentationContent += "\n" + template.footer;
         }
         return documentationContent;
-    }
-    findReferencedContentItem(referenceTitle) {
-        for (const document of this.config.documents) {
-            for (const item of document.content) {
-                if (item.title === referenceTitle) {
-                    return item;
-                }
-            }
-        }
-        return null;
     }
     async processContentItem(contentItem, processedFiles, processor) {
         if (contentItem.reference) {
@@ -114,15 +116,15 @@ class DocsBuilder {
             throw new Error(`Content item's 'include' field is not an array or missing.`);
         }
         for (const pattern of contentItem.include) {
-            const files = await glob(pattern, { cwd: projectRoot, nodir: true });
+            const files = globSync(pattern, { cwd: projectRoot, nodir: true });
             for (const file of files) {
                 const fullPath = path.join(projectRoot, file);
-                if (processedFiles.has(fullPath) ||
-                    this.isFileExcluded(fullPath, contentItem.exclude, projectRoot)) {
-                    continue;
+                if (!processedFiles.has(fullPath) &&
+                    !this.isFileExcluded(fullPath, contentItem.exclude, projectRoot)) {
+                    processedFiles.add(fullPath);
+                    const fileContent = await this.processFile(fullPath, processor, contentItem, projectRoot);
+                    content += fileContent;
                 }
-                processedFiles.add(fullPath);
-                content += await this.processFile(fullPath, processor, contentItem, projectRoot);
             }
         }
         return content;
