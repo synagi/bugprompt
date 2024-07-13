@@ -1,5 +1,5 @@
 {
-  "outputDir": "bin/docs",
+  "outputDir": "bin/",
   "templates": [
     {
       "name": "default",
@@ -30,9 +30,9 @@
             "**/*.js",
             "**/*.cjs",
             "**/*.mjs",
-            "**/*.json",
             "**/*.tsx",
-            "**/*.jsx"
+            "**/*.jsx",
+            "**/*.json"
           ],
           "exclude": [
             "node_modules/**/*",

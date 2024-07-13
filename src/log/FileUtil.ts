@@ -96,6 +96,31 @@ class FileUtils {
     console.warn("Unable to find package.json in any parent directory.");
     return null;
   }
+
+  static async prepareOutputDirectory(dirPath: string): Promise<void> {
+    try {
+      await fs.promises.mkdir(dirPath, { recursive: true });
+      console.log(`Output directory created or verified: ${dirPath}`);
+      await this.cleanDirectory(dirPath);
+    } catch (error) {
+      console.error(`Error preparing output directory ${dirPath}:`, error);
+      throw error;
+    }
+  }
+
+  static async cleanDirectory(dirPath: string): Promise<void> {
+    try {
+      const files = await fs.promises.readdir(dirPath);
+      for (const file of files) {
+        const fullPath = path.join(dirPath, file);
+        await fs.promises.rm(fullPath, { recursive: true, force: true });
+      }
+      console.log(`Directory cleaned: ${dirPath}`);
+    } catch (error) {
+      console.error(`Error cleaning directory ${dirPath}:`, error);
+      throw error;
+    }
+  }
 }
 
 export default FileUtils;

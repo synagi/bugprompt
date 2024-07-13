@@ -46,14 +46,17 @@ interface SanitizePair {
 class DocsBuilder {
   private config: Config;
   private projectRoot: string;
+  private outputPath: string;
 
-  constructor(config: Config) {
+  constructor(config: Config, outputPath: string) {
     this.validateConfig(config);
     this.config = config;
     this.projectRoot = ProjectUtil.findProjectRoot();
+    this.outputPath = outputPath;
     console.log(
       `DocsBuilder initialized with projectRoot: ${this.projectRoot}`,
     );
+    console.log(`Output path: ${this.outputPath}`);
     console.log(`Config:`, JSON.stringify(this.config, null, 2));
   }
 
@@ -69,40 +72,14 @@ class DocsBuilder {
     }
   }
 
-  private async ensureDirectoryExistence(dirPath: string): Promise<void> {
-    try {
-      const dirExists = await fs
-        .access(dirPath)
-        .then(() => true)
-        .catch(() => false);
-      if (!dirExists) {
-        console.log(`Directory ${dirPath} does not exist, creating it.`);
-        await fs.mkdir(dirPath, { recursive: true });
-        console.log(`Directory ${dirPath} created.`);
-      } else {
-        console.log(`Directory ${dirPath} already exists.`);
-      }
-    } catch (error) {
-      console.error(
-        `Error ensuring directory existence for ${dirPath}:`,
-        error,
-      );
-      throw error;
-    }
-  }
-
   async build(): Promise<void> {
     await this.init();
-
-    const outputBaseDir = this.config.outputDir || "bin/docs";
-    const outputDir = path.join(this.projectRoot, outputBaseDir);
-    console.log(`Output directory: ${outputDir}`);
-
-    await this.ensureDirectoryExistence(outputDir);
 
     for (const document of this.config.documents) {
       console.log(`Processing document: ${document.fileName}`);
       console.log(`Document config:`, JSON.stringify(document, null, 2));
+
+      // Process the document to generate its content
       let documentationContent = await this.processDocument(document);
       if (this.config.sanitize && Array.isArray(this.config.sanitize)) {
         documentationContent = this.sanitizeContent(
@@ -110,7 +87,13 @@ class DocsBuilder {
           this.config.sanitize,
         );
       }
-      await this.writeDocumentation(outputDir, document, documentationContent);
+
+      // Write the processed content to the correct file in the output directory
+      await this.writeDocumentation(
+        this.outputPath,
+        document,
+        documentationContent,
+      );
     }
   }
 

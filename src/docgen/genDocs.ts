@@ -28,8 +28,6 @@ async function main() {
         console.log(
           "config.docs.json not found in the project root. Using default configuration.",
         );
-
-        // Get the path to the default config file in the nodejs-util package
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
         const defaultConfigPath = path.join(
@@ -39,31 +37,30 @@ async function main() {
           "config.docs.json",
         );
 
-        try {
-          const defaultConfigContent = await fs.readFile(
-            defaultConfigPath,
-            "utf8",
-          );
-          config = JSON.parse(defaultConfigContent);
-
-          // Copy the default config to the project root
-          await fs.writeFile(configPath, defaultConfigContent);
-          console.log(
-            "Default config.docs.json has been copied to the project root.",
-          );
-        } catch (defaultConfigError) {
-          console.error(
-            "Error reading or copying default config:",
-            defaultConfigError,
-          );
-          throw defaultConfigError;
-        }
+        const defaultConfigContent = await fs.readFile(
+          defaultConfigPath,
+          "utf8",
+        );
+        config = JSON.parse(defaultConfigContent);
+        await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+        console.log(
+          "Default config.docs.json has been copied to the project root.",
+        );
       } else {
         throw error;
       }
     }
 
-    const builder = new DocsBuilder(config);
+    // Determine the output directory
+    const baseOutputDir = config.outputDir || "bin/docs";
+    const bugpromptDir = "bugprompt";
+    const fullOutputPath = path.join(projectRoot, baseOutputDir, bugpromptDir);
+
+    // Ensure the output directory exists and is clean
+    await FileUtils.prepareOutputDirectory(fullOutputPath);
+
+    // Create DocsBuilder instance with the full output path
+    const builder = new DocsBuilder(config, fullOutputPath);
     await builder.build();
   } catch (error) {
     console.error("Error in documentation generation:", error);

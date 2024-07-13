@@ -15,10 +15,10 @@
   "scripts": {
     "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
     "clean": "rm -rf dist/ *.tsbuildinfo",
-    "build": "npm run clean && tsc -p ./tsconfig.json",
+    "build": "npm run format && npm run prepare",
     "test": "npm run build && node test.mjs",
-    "docs": "npm run build && rm -rfv ./bin/docs && node ./dist/docgen/genDocs.js",
-    "prepare": "npm run build"
+    "docs": "npm run build && node ./dist/docgen/genDocs.js",
+    "prepare": "npm run clean && tsc -p ./tsconfig.json"
   },
   "dependencies": {
     "glob": "^11.0.0",
