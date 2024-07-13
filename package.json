@@ -22,11 +22,11 @@
   },
   "dependencies": {
     "glob": "^11.0.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "@types/node": "^20.14.10"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
-    "@types/node": "^20.14.10",
     "prettier": "^3.3.2"
   }
 }
