@@ -25,9 +25,9 @@
           "useCodeblocks": true,
           "headerRootPath": false,
           "headerRelativePath": true,
-          "root": "src",
+          "root": "./",
           "include": ["**/*.ts"],
-          "exclude": ["package-lock.json"]
+          "exclude": ["node_modules/**/*", "package-lock.json"]
         }
       ]
     }

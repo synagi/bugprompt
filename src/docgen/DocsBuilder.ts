@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { globSync } from "glob";
+import { glob } from "glob";
 import FileProcessor from "./FileProcessor.js";
 import ProjectUtil from "../utils/ProjectUtil.js";
 
@@ -102,6 +102,7 @@ class DocsBuilder {
 
     for (const document of this.config.documents) {
       console.log(`Processing document: ${document.fileName}`);
+      console.log(`Document config:`, JSON.stringify(document, null, 2));
       let documentationContent = await this.processDocument(document);
       if (this.config.sanitize && Array.isArray(this.config.sanitize)) {
         documentationContent = this.sanitizeContent(
@@ -173,6 +174,8 @@ class DocsBuilder {
     console.log(
       `Processing content item with include patterns: ${contentItem.include}`,
     );
+    console.log(`Exclude patterns: ${contentItem.exclude}`);
+
     if (contentItem.reference) {
       const referencedItem = this.findReferencedContentItem(
         contentItem.reference,
@@ -204,16 +207,22 @@ class DocsBuilder {
       );
     }
 
-    for (const pattern of contentItem.include) {
-      const files = globSync(pattern, { cwd: projectRoot, nodir: true });
+    const globOptions = {
+      cwd: projectRoot,
+      nodir: true,
+      ignore: contentItem.exclude,
+      absolute: true,
+    };
+    console.log(`Glob options:`, JSON.stringify(globOptions, null, 2));
 
-      for (const file of files) {
-        const fullPath = path.join(projectRoot, file);
-        if (
-          !processedFiles.has(fullPath) &&
-          !this.isFileExcluded(fullPath, contentItem.exclude, projectRoot)
-        ) {
+    for (const pattern of contentItem.include) {
+      const files = await glob(pattern, globOptions);
+      console.log(`Glob pattern ${pattern} matched files: ${files.length}`);
+
+      for (const fullPath of files) {
+        if (!processedFiles.has(fullPath)) {
           processedFiles.add(fullPath);
+          console.log(`Processing file: ${fullPath}`);
           const fileContent = await this.processFile(
             fullPath,
             processor,
@@ -225,21 +234,6 @@ class DocsBuilder {
       }
     }
     return content;
-  }
-
-  private isFileExcluded(
-    filePath: string,
-    excludePatterns: string[] | undefined,
-    projectRoot: string,
-  ): boolean {
-    if (!excludePatterns) return false;
-    const relativePath = path.relative(projectRoot, filePath);
-    return excludePatterns.some((pattern) => {
-      const regex = new RegExp(
-        "^" + pattern.replace(/\*/g, ".*").replace(/\?/g, ".") + "$",
-      );
-      return regex.test(relativePath);
-    });
   }
 
   private async processFile(
