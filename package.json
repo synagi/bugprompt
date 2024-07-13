@@ -1,0 +1,23 @@
+{
+  "name": "@synagi/nodejs-util",
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "npm@9.5.0",
+  "author": "freegheist",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
+    "clean": "tsc -b --clean && rm -rf dist/ *.tsbuildinfo",
+    "build": "npm run format && npm run clean && tsc -b"
+  },
+  "bin": {
+    "gendocs": "./dist/docgen/genDocs.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "glob-promise": "^6.0.5",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.3"
+  }
+}
