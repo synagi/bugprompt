@@ -1,1 +1,3 @@
-export * from "./log/LoggerWrapper.js";
+import bugprompt from "./bugprompt";
+
+export default bugprompt;

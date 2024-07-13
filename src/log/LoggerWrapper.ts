@@ -3,6 +3,12 @@ import logger from "./Logger.js";
 type LogLevel = "info" | "warn" | "error" | "debug" | "trace" | "exception";
 
 class LoggerWrapper {
+  private static enabled: boolean = false;
+
+  static enable(): void {
+    LoggerWrapper.enabled = true;
+  }
+
   static info(...messages: any[]): void {
     LoggerWrapper.handleAsyncLog("info", ...messages);
   }
@@ -28,9 +34,11 @@ class LoggerWrapper {
   }
 
   private static handleAsyncLog(level: LogLevel, ...messages: any[]): void {
-    logger[level](...messages).catch((err: Error) => {
-      console.error(`Failed to log message at level ${level}:`, err);
-    });
+    if (LoggerWrapper.enabled) {
+      logger[level](...messages).catch((err: Error) => {
+        console.error(`Failed to log message at level ${level}:`, err);
+      });
+    }
   }
 }
 

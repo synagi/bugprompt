@@ -15,7 +15,7 @@
     "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
     "clean": "rm -rf dist/ *.tsbuildinfo",
     "build": "npm run format && npm run prepare",
-    "test": "npm run build && node test.mjs",
+    "test": "npm run build && node test.js",
     "docs": "npm run build && node ./dist/docgen/genDocs.js",
     "prepare": "npm run clean && tsc -p ./tsconfig.json"
   },
