@@ -1,3 +1,4 @@
+// test2.js
 import LoggerWrapper from "./dist/log/LoggerWrapper.js";
 
 async function faultyFunction() {

@@ -3,28 +3,27 @@ import path from "path";
 import fs from "fs";
 import StackTraceUtil from "./StackTraceUtil.js";
 
-interface ErrorProps {
+export interface ErrorProps {
   name: string;
   message: string;
   stack: string | StackEntry[] | [];
   params: string;
 }
 
-interface StackEntry {
+export interface StackEntry {
   file: string;
   line: number;
   at: string;
   code?: string;
 }
 
-interface ErrorObject {
+export interface ErrorObject {
   error: ErrorProps;
   log: string;
   formatted: string;
 }
 
 class ErrorUtil {
-  // Asynch (non-blocking) entry-point for general use in production
   static async convertError(
     error: Error | string,
     newCode: any = null,
@@ -33,7 +32,6 @@ class ErrorUtil {
     return this._formatErrorObject(errorObject);
   }
 
-  // Synchronous version, e.g. for global unhandled errors and rejections on process exit
   static convertErrorSync(
     error: Error | string,
     newCode: any = null,
@@ -42,23 +40,20 @@ class ErrorUtil {
     return this._formatErrorObject(errorObject);
   }
 
-  // Shared method to format error object
   private static _formatErrorObject(errorObject: ErrorProps): ErrorObject {
     return {
-      error: errorObject, // Raw JSON format
-      log: JSON.stringify(errorObject, this._replacer), // Stringified format
-      formatted: this._formatConsoleError(errorObject), // Human-readable format
+      error: errorObject,
+      log: JSON.stringify(errorObject, this._replacer),
+      formatted: this._formatConsoleError(errorObject),
     };
   }
 
-  // Asynchronous version of _processError
   private static async _processError(
     error: Error | string,
     newCode: any,
   ): Promise<ErrorProps> {
     const errorProps = this._sharedProcessErrorLogic(error);
 
-    // Fetch lines of code asynchronously
     if (Array.isArray(errorProps.stack)) {
       errorProps.stack = await this._fetchLinesOfCode(
         errorProps.stack,
@@ -68,23 +63,19 @@ class ErrorUtil {
     return errorProps;
   }
 
-  // Synchronous version of _processError
   private static _processErrorSync(
     error: Error | string,
     newCode: any,
   ): ErrorProps {
     const errorProps = this._sharedProcessErrorLogic(error);
 
-    // Ensure that errorProps.stack is always an array
     if (Array.isArray(errorProps.stack)) {
       errorProps.stack = this._fetchLinesOfCodeSync(errorProps.stack, newCode);
     }
     return errorProps;
   }
 
-  // Shared logic between sync / async _processError functions
   private static _sharedProcessErrorLogic(error: Error | string): ErrorProps {
-    // Handling string errors (or non-Error objects)
     if (typeof error === "string") {
       return {
         name: "DevErrorMessage",
@@ -94,7 +85,6 @@ class ErrorUtil {
       };
     }
 
-    // Default properties for an error object
     let errorProps: ErrorProps = {
       name: error.name || "Unknown Error",
       message: error.message || "No message provided",
@@ -102,12 +92,10 @@ class ErrorUtil {
       params: "",
     };
 
-    // Handle AggregateError
     if (error instanceof AggregateError) {
       errorProps.stack = error.errors.map((err) => err.stack || "").join("\n");
     }
 
-    // Extract additional properties if they exist
     const additionalProps = [
       "code",
       "errno",
@@ -122,7 +110,6 @@ class ErrorUtil {
       .map((prop) => `${prop}: ${(error as any)[prop]}`)
       .join(", ");
 
-    // Process stack trace if available
     if (
       errorProps.stack !== "No stack trace provided" &&
       errorProps.stack.length > 0
@@ -134,7 +121,7 @@ class ErrorUtil {
         errorProps.stack = filteredProjectStack;
       }
     } else {
-      errorProps.stack = []; // Ensure it's an empty array if no stack trace
+      errorProps.stack = [];
     }
 
     return errorProps;
@@ -162,7 +149,6 @@ class ErrorUtil {
           return null;
         }
 
-        // Check for node modules and internal lines
         if (trimmedLine.includes("/node_modules/")) {
           return { type: "node_module", line: trimmedLine };
         } else if (
@@ -172,7 +158,6 @@ class ErrorUtil {
           return { type: "internal", line: trimmedLine };
         }
 
-        // Check if the line is an anonymous or native call
         if (
           trimmedLine.includes("(<anonymous>)") ||
           trimmedLine.includes("(native)")
@@ -180,12 +165,10 @@ class ErrorUtil {
           return { type: "unknown", line: trimmedLine };
         }
 
-        // Check for project lines
         if (ProjectUtil.isLineInProject(trimmedLine)) {
           return { type: "project", line: trimmedLine };
         }
 
-        // Default to unknown for any other cases
         return { type: "unknown", line: trimmedLine };
       })
       .filter(
@@ -225,7 +208,6 @@ class ErrorUtil {
     filteredProjectStack: StackEntry[],
     newCode: any[] | null = null,
   ): Promise<StackEntry[]> {
-    // Ensure that filteredProjectStack is always an array
     if (!Array.isArray(filteredProjectStack)) {
       return [];
     }
@@ -236,7 +218,6 @@ class ErrorUtil {
           return { ...entry, code: "<no-data>" };
         }
 
-        // Use newCode if provided
         if (newCode) {
           const matchingCodeEntry = newCode.find(
             (codeEntry) =>
@@ -247,7 +228,6 @@ class ErrorUtil {
           }
         }
 
-        // Fallback to async file reading logic
         const absoluteFilePath = ProjectUtil.getAbsoluteFilePath(entry.file);
         if (!fs.existsSync(absoluteFilePath)) {
           return { ...entry, code: "<no-data>" };
@@ -275,7 +255,6 @@ class ErrorUtil {
     filteredProjectStack: StackEntry[],
     newCode: any[] | null = null,
   ): StackEntry[] {
-    // Ensure that filteredProjectStack is always an array
     if (!Array.isArray(filteredProjectStack)) {
       return [];
     }
@@ -285,7 +264,6 @@ class ErrorUtil {
         return { ...entry, code: "<no-data>" };
       }
 
-      // Use newCode if provided
       if (newCode) {
         const matchingCodeEntry = newCode.find(
           (codeEntry) =>
@@ -296,7 +274,6 @@ class ErrorUtil {
         }
       }
 
-      // Fallback to sync file reading logic
       const absoluteFilePath = ProjectUtil.getAbsoluteFilePath(entry.file);
       if (!fs.existsSync(absoluteFilePath)) {
         return { ...entry, code: "<no-data>" };

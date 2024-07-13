@@ -1,3 +1,3 @@
-import bugprompt from "./bugprompt";
+import Bugprompt from "./bugprompt.js";
 
-export default bugprompt;
+export default Bugprompt;

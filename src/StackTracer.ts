@@ -1,35 +1,69 @@
-import ErrorUtil from "./utils/ErrorUtil.js";
+import ErrorUtil, { ErrorObject } from "./utils/ErrorUtil.js";
 
-class StackTracer {
-  private enabled: boolean = false;
+export interface IStackTracer {
+  enable(): void;
+  isEnabled(): boolean;
+  processError(error: Error | string): Promise<ErrorObject>;
+  processErrorSync(error: Error | string): ErrorObject;
+}
+
+class StackTracer implements IStackTracer {
+  private static instance: StackTracer;
+  private _enabled: boolean = false;
+
+  private constructor() {
+    this.setupErrorPreparation();
+  }
+
+  public static getInstance(): StackTracer {
+    if (!StackTracer.instance) {
+      StackTracer.instance = new StackTracer();
+    }
+    return StackTracer.instance;
+  }
 
   enable(): void {
-    if (!this.enabled) {
-      this.enabled = true;
+    if (!this._enabled) {
+      this._enabled = true;
       this.setupGlobalHandlers();
     }
   }
 
-  private setupGlobalHandlers(): void {
+  isEnabled(): boolean {
+    return this._enabled;
+  }
+
+  private setupErrorPreparation(): void {
     Error.stackTraceLimit = Infinity;
+  }
 
-    Error.prepareStackTrace = (error) => {
-      return ErrorUtil.convertError(error);
-    };
-
+  private setupGlobalHandlers(): void {
     process.on("uncaughtException", (error) => {
-      console.error("Uncaught Exception:", ErrorUtil.convertErrorSync(error));
+      console.error(
+        "Uncaught Exception:",
+        this.processErrorSync(error).formatted,
+      );
       process.exit(1);
     });
 
     process.on("unhandledRejection", (reason) => {
       console.error(
         "Unhandled Rejection:",
-        ErrorUtil.convertErrorSync(reason as Error),
+        this.processErrorSync(
+          reason instanceof Error ? reason : new Error(String(reason)),
+        ).formatted,
       );
       process.exit(1);
     });
   }
+
+  async processError(error: Error | string): Promise<ErrorObject> {
+    return ErrorUtil.convertError(error);
+  }
+
+  processErrorSync(error: Error | string): ErrorObject {
+    return ErrorUtil.convertErrorSync(error);
+  }
 }
 
-export default StackTracer;
+export default StackTracer.getInstance();
