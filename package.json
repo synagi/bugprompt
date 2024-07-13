@@ -6,6 +6,10 @@
   "author": "freegheist",
   "license": "MIT",
   "main": "dist/index.js",
+  "files": [
+    "dist",
+    "config.docs.json"
+  ],
   "scripts": {
     "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
     "clean": "tsc -b --clean && rm -rf dist/ *.tsbuildinfo",
