@@ -3,10 +3,8 @@ import fs from "fs/promises";
 import path from "path";
 import FileUtils from "../log/FileUtil.js";
 
-// Config file name constant
-const CONFIG_FILE_NAME = "bugprompt.json";
-
-// Default configuration, created in root if missing
+// Default config, auto created in root if missing
+const CONFIG_NAME = "bugprompt";
 const DEFAULT_CONFIG = {
   outputDir: "bin/",
   templates: [
@@ -31,7 +29,8 @@ const DEFAULT_CONFIG = {
       content: [
         {
           title: "projectname",
-          description: "Any important project details or gotchas go here...",
+          description:
+            "Any important project details or gotchas for the LLM go here...",
           headerPrefix: "##",
           root: "",
           include: [
@@ -42,13 +41,13 @@ const DEFAULT_CONFIG = {
             "**/*.mjs",
             "**/*.tsx",
             "**/*.jsx",
-            "**/*.json",
           ],
           exclude: [
             "node_modules/**/*",
             "dist/**/*",
             "bin/**/*",
-            "package-lock.json",
+            "*.json",
+            "*.log",
           ],
         },
       ],
@@ -64,9 +63,21 @@ const DEFAULT_CONFIG = {
         },
       ],
     },
+    {
+      fileName: "Project Config",
+      minificationLevel: 1,
+      content: [
+        {
+          reference: "projectname",
+          include: ["*.json"],
+          exclude: ["package-lock.json"],
+        },
+      ],
+    },
   ],
 };
 
+// gen docs from the config
 async function main() {
   try {
     const projectRoot = await FileUtils.findProjectRoot();
@@ -76,7 +87,9 @@ async function main() {
       );
     }
 
-    const configPath = path.join(projectRoot, CONFIG_FILE_NAME);
+    const confFileName = CONFIG_NAME + ".json";
+
+    const configPath = path.join(projectRoot, confFileName);
     let config;
 
     try {
@@ -89,27 +102,25 @@ async function main() {
         error.code === "ENOENT"
       ) {
         console.log(
-          `${CONFIG_FILE_NAME} not found in the project root. Using default configuration.`,
+          `${confFileName} not found in the project root. Using default configuration.`,
         );
         config = DEFAULT_CONFIG;
         await fs.writeFile(configPath, JSON.stringify(config, null, 2));
         console.log(
-          `Default ${CONFIG_FILE_NAME} has been created in the project root.`,
+          `Default ${confFileName} has been created in the project root.`,
         );
       } else {
         throw error;
       }
     }
 
-    // Determine the output directory
-    const baseOutputDir = config.outputDir || "bin/docs";
-    const bugpromptDir = "bugprompt";
+    const baseOutputDir = config.outputDir || "bin";
+    const bugpromptDir = CONFIG_NAME;
     const fullOutputPath = path.join(projectRoot, baseOutputDir, bugpromptDir);
 
-    // Ensure the output directory exists and is clean
+    // Ensure output dir exists and is clean
     await FileUtils.prepareOutputDirectory(fullOutputPath);
 
-    // Create DocsBuilder instance with the full output path
     const builder = new DocsBuilder(config, fullOutputPath);
     await builder.build();
   } catch (error) {
