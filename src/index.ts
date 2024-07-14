@@ -1,3 +1,5 @@
-import Bugprompt from "./bugprompt.js";
+// index.ts
+import { Bugprompt } from "./bugprompt.js";
 
-export default Bugprompt;
+const bugprompt = Bugprompt.getInstance();
+export default bugprompt;

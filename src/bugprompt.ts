@@ -1,13 +1,12 @@
 import Config from "./config/Config.js";
+import StackTracer from "./StackTracer.js";
 import LoggerWrapper from "./log/LoggerWrapper.js";
-import StackTracer, { IStackTracer } from "./StackTracer.js";
 
-class Bugprompt {
+export class Bugprompt {
   private static instance: Bugprompt;
   private _config: Config;
-
-  public LoggerWrapper = LoggerWrapper;
-  public StackTracer: IStackTracer = StackTracer;
+  private _stackTracer: StackTracer | null = null;
+  private _logger: typeof LoggerWrapper | null = null;
 
   private constructor() {
     this._config = new Config();
@@ -22,18 +21,28 @@ class Bugprompt {
 
   public config(): void {
     this._config.load();
-    this.applyConfig();
+    const stackTracerInstance = StackTracer.getInstance();
+    if (this._config.stacktrace?.enabled) {
+      this._stackTracer = stackTracerInstance;
+      stackTracerInstance.enable();
+    } else {
+      this._stackTracer = null;
+      stackTracerInstance.disable();
+    }
+    if (this._config.log?.enabled) {
+      this._logger = LoggerWrapper;
+      LoggerWrapper.enable();
+    } else {
+      this._logger = null;
+      LoggerWrapper.disable();
+    }
   }
 
-  private applyConfig(): void {
-    if (this._config.stacktrace?.enabled) {
-      this.StackTracer.enable();
-    }
+  public getStackTracer(): StackTracer | null {
+    return this._stackTracer;
+  }
 
-    if (this._config.log?.enabled) {
-      this.LoggerWrapper.enable();
-    }
+  public getLogger(): typeof LoggerWrapper | null {
+    return this._logger;
   }
 }
-
-export default Bugprompt.getInstance();

@@ -21,6 +21,7 @@ class Logger {
   private isNode: boolean;
   private maxFileSize: number;
   private projectName: string;
+  private enabled: boolean = false;
 
   private constructor(projectName = "") {
     this.isNode = EnvironmentUtils.isNodeEnvironment();
@@ -30,6 +31,10 @@ class Logger {
       : projectName || "NON-NODEJS";
 
     this.setupGlobalErrorHandlers();
+  }
+
+  public setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
   }
 
   public static getInstance(projectName = ""): Logger {
@@ -63,8 +68,8 @@ class Logger {
     // Console output
     console[consoleLevel](...consoleMessages);
 
-    // File output
-    if (this.isNode) {
+    // File output only if enabled
+    if (this.isNode && this.enabled) {
       const logEntry = this.formatLogEntry(level, formattedMessages.join(" "));
       FileUtils.logToFile(logEntry, this.maxFileSize);
     }
@@ -116,8 +121,8 @@ class Logger {
       }
     }
 
-    // File output (synchronous)
-    if (this.isNode) {
+    // File output (synchronous) only if enabled
+    if (this.isNode && this.enabled) {
       const logEntry = this.formatLogEntry(level, formattedMessages.join(" "));
       FileUtils.logToFileSync(logEntry, this.maxFileSize);
     }

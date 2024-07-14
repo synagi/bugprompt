@@ -62,12 +62,12 @@ class Config implements BugpromptConfig {
     const projectRoot = ProjectUtil.findProjectRoot();
     const configPath = path.join(projectRoot, `${CONFIG_NAME}.json`);
 
-    if (fs.existsSync(configPath)) {
-      const fileConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
-      this.mergeConfig(fileConfig);
-    } else {
+    if (!fs.existsSync(configPath)) {
       this.createDefaultConfig(configPath);
     }
+
+    const fileConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    this.mergeConfig(fileConfig);
   }
 
   private mergeConfig(fileConfig: Partial<BugpromptConfig>): void {
