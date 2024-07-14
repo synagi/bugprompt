@@ -22,18 +22,22 @@ class StackTracer implements IStackTracer {
   }
 
   enable(): void {
+    console.log("StackTracer enable() called");
     if (!this._enabled) {
       this._enabled = true;
       this.setupErrorPreparation();
       this.setupGlobalHandlers();
     }
+    console.log("StackTracer enabled:", this._enabled);
   }
 
   disable(): void {
+    console.log("StackTracer disable() called");
     if (this._enabled) {
       this._enabled = false;
       this.removeGlobalHandlers();
     }
+    console.log("StackTracer enabled:", this._enabled);
   }
 
   isEnabled(): boolean {
@@ -45,16 +49,21 @@ class StackTracer implements IStackTracer {
   }
 
   private setupGlobalHandlers(): void {
+    console.log("Setting up global handlers");
+    process.removeListener("uncaughtException", this.handleUncaughtException);
+    process.removeListener("unhandledRejection", this.handleUnhandledRejection);
     process.on("uncaughtException", this.handleUncaughtException);
     process.on("unhandledRejection", this.handleUnhandledRejection);
   }
 
   private removeGlobalHandlers(): void {
-    process.off("uncaughtException", this.handleUncaughtException);
-    process.off("unhandledRejection", this.handleUnhandledRejection);
+    console.log("Removing global handlers");
+    process.removeListener("uncaughtException", this.handleUncaughtException);
+    process.removeListener("unhandledRejection", this.handleUnhandledRejection);
   }
 
   private handleUncaughtException = (error: Error) => {
+    console.log("Uncaught exception handler called, enabled:", this._enabled);
     if (this._enabled) {
       console.error(
         "Uncaught Exception:",

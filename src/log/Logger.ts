@@ -29,8 +29,6 @@ class Logger {
     this.projectName = this.isNode
       ? projectName || ProjectUtils.getProjectName() || "Unknown_Project"
       : projectName || "NON-NODEJS";
-
-    this.setupGlobalErrorHandlers();
   }
 
   public setEnabled(enabled: boolean): void {
@@ -128,20 +126,6 @@ class Logger {
     }
   }
 
-  // Global error handlers setup
-  private setupGlobalErrorHandlers(): void {
-    if (!this.isNode) return;
-
-    process.on("uncaughtException", (err: Error) => {
-      this.logSync("exception", "Uncaught Exception:", err);
-      process.exit(1);
-    });
-
-    process.on("unhandledRejection", (reason: any) => {
-      this.logSync("exception", "Unhandled Rejection:", reason);
-      process.exit(1);
-    });
-  }
 }
 
 export default Logger.getInstance();
