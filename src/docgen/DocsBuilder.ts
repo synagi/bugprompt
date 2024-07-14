@@ -51,7 +51,13 @@ class DocsBuilder {
   constructor(config: Config, outputPath: string) {
     this.validateConfig(config);
     this.config = config;
-    this.projectRoot = ProjectUtil.findProjectRoot();
+    const projectRoot = ProjectUtil.findProjectRoot();
+    if (!projectRoot) {
+      throw new Error(
+        "Project root not found. Unable to initialize DocsBuilder.",
+      );
+    }
+    this.projectRoot = projectRoot;
     this.outputPath = outputPath;
     console.log(
       `DocsBuilder initialized with projectRoot: ${this.projectRoot}`,

@@ -1,11 +1,12 @@
 import DocsBuilder from "./DocsBuilder.js";
 import path from "path";
-import FileUtils from "../log/FileUtil.js";
+import DocUtil from "../utils/DocsUtil.js";
+import ProjectUtil from "../utils/ProjectUtil.js";
 import Config, { CONFIG_NAME } from "../config/Config.js";
 
 async function main() {
   try {
-    const projectRoot = await FileUtils.findProjectRoot();
+    const projectRoot = ProjectUtil.findProjectRoot();
     if (!projectRoot) {
       throw new Error(
         "Project root not found. Make sure you are running this from within a Node.js project.",
@@ -20,7 +21,7 @@ async function main() {
     const fullOutputPath = path.join(projectRoot, baseOutputDir, bugpromptDir);
 
     // Ensure output dir exists and is clean
-    await FileUtils.prepareOutputDirectory(fullOutputPath);
+    await DocUtil.prepareOutputDirectory(fullOutputPath);
 
     const builder = new DocsBuilder(config.docs, fullOutputPath);
     await builder.build();

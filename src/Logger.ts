@@ -47,7 +47,12 @@ class Logger {
   private initLogFile(): void {
     if (this.isNode) {
       const projectRoot = ProjectUtils.findProjectRoot();
-      this.logFilePath = path.join(projectRoot, "bugprompt.log");
+      if (projectRoot) {
+        this.logFilePath = path.join(projectRoot, "bugprompt.log");
+      } else {
+        console.warn("Project root not found. Log file will not be created.");
+        this.logFilePath = null;
+      }
     }
   }
 

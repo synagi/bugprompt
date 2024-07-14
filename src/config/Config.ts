@@ -60,6 +60,12 @@ class Config implements BugpromptConfig {
 
   load(): void {
     const projectRoot = ProjectUtil.findProjectRoot();
+    if (!projectRoot) {
+      console.warn(
+        "Project root not found. Using current directory for config.",
+      );
+      return;
+    }
     const configPath = path.join(projectRoot, `${CONFIG_NAME}.json`);
 
     if (!fs.existsSync(configPath)) {

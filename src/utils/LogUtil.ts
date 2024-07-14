@@ -1,47 +1,11 @@
 import fs from "fs";
 import path from "path";
+import ProjectUtil from "./ProjectUtil.js";
 
-class FileUtils {
-  static findProjectRoot(currentDir: string = process.cwd()): string | null {
-    let directory = currentDir;
-    while (directory !== path.parse(directory).root) {
-      const packageJsonPath = path.join(directory, "package.json");
-      if (fs.existsSync(packageJsonPath)) {
-        return directory;
-      }
-      directory = path.dirname(directory);
-    }
-    return null;
-  }
-
+class LogUtil {
   static getLogFilePath(): string | null {
-    const projectRoot = this.findProjectRoot();
+    const projectRoot = ProjectUtil.findProjectRoot();
     return projectRoot ? path.join(projectRoot, "bugprompt.log") : null;
-  }
-
-  static async prepareOutputDirectory(dirPath: string): Promise<void> {
-    try {
-      await fs.promises.mkdir(dirPath, { recursive: true });
-      console.log(`Output directory created or verified: ${dirPath}`);
-      await this.cleanDirectory(dirPath);
-    } catch (error) {
-      console.error(`Error preparing output directory ${dirPath}:`, error);
-      throw error;
-    }
-  }
-
-  static async cleanDirectory(dirPath: string): Promise<void> {
-    try {
-      const files = await fs.promises.readdir(dirPath);
-      for (const file of files) {
-        const fullPath = path.join(dirPath, file);
-        await fs.promises.rm(fullPath, { recursive: true, force: true });
-      }
-      console.log(`Directory cleaned: ${dirPath}`);
-    } catch (error) {
-      console.error(`Error cleaning directory ${dirPath}:`, error);
-      throw error;
-    }
   }
 
   static logToFile(message: string, maxSize: number): void {
@@ -95,4 +59,4 @@ class FileUtils {
   }
 }
 
-export default FileUtils;
+export default LogUtil;

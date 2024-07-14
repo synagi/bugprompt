@@ -19,56 +19,33 @@ class ProjectUtil {
     return null;
   }
 
-  static findProjectRoot(currentDir: string = process.cwd()): string {
+  static findProjectRoot(currentDir: string = process.cwd()): string | null {
     let directory = currentDir;
-    let lastDirectory = "";
-    let foundNodeModules = false;
-
-    while (directory !== lastDirectory) {
-      if (fs.existsSync(path.join(directory, "package.json"))) {
-        const packageJsonPath = path.join(directory, "package.json");
-        const packageJson = JSON.parse(
-          fs.readFileSync(packageJsonPath, "utf8"),
-        );
-
-        if (packageJson.name === this.getProjectName()) {
-          return directory;
-        } else if (foundNodeModules) {
-          console.log(
-            `Passed through node_modules. Returning directory: ${directory}`,
-          );
-          return directory;
-        }
+    while (directory !== path.parse(directory).root) {
+      const packageJsonPath = path.join(directory, "package.json");
+      if (fs.existsSync(packageJsonPath)) {
+        return directory;
       }
-
-      if (path.basename(directory) === "node_modules") {
-        console.log(`Found node_modules directory: ${directory}`);
-        foundNodeModules = true;
-      }
-
-      lastDirectory = directory;
       directory = path.dirname(directory);
     }
-
-    console.log(
-      `No suitable root found. Returning current working directory: ${process.cwd()}`,
-    );
-    return process.cwd();
+    return null;
   }
 
   static getRelativePath(fullPath: string): string {
     const projectRoot = this.findProjectRoot();
-    return path.relative(projectRoot, fullPath);
+    return projectRoot ? path.relative(projectRoot, fullPath) : fullPath;
   }
 
   static getAbsoluteFilePath(relativeFilePath: string): string {
     const projectRoot = this.findProjectRoot();
-    return path.join(projectRoot, relativeFilePath);
+    return projectRoot
+      ? path.join(projectRoot, relativeFilePath)
+      : relativeFilePath;
   }
 
   static isLineInProject(line: string): boolean {
     const projectRoot = this.findProjectRoot();
-    return line.includes(projectRoot);
+    return projectRoot ? line.includes(projectRoot) : false;
   }
 }
 
