@@ -24,11 +24,11 @@
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
     "target": "ES2021",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "typeRoots": ["./node_modules/@types"],
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": ["./src/**/*.ts", "./src/**/*.d.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

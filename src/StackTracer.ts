@@ -26,22 +26,18 @@ class StackTracer implements IStackTracer {
   }
 
   enable(): void {
-    console.log("StackTracer enable() called");
     if (!this._enabled) {
       this._enabled = true;
       this.setupErrorPreparation();
       this.setupGlobalHandlers();
     }
-    console.log("StackTracer enabled:", this._enabled);
   }
 
   disable(): void {
-    console.log("StackTracer disable() called");
     if (this._enabled) {
       this._enabled = false;
       this.removeGlobalHandlers();
     }
-    console.log("StackTracer enabled:", this._enabled);
   }
 
   isEnabled(): boolean {
@@ -53,7 +49,6 @@ class StackTracer implements IStackTracer {
   }
 
   private setupGlobalHandlers(): void {
-    console.log("Setting up global handlers");
     process.removeListener("uncaughtException", this.handleUncaughtException);
     process.removeListener("unhandledRejection", this.handleUnhandledRejection);
     process.on("uncaughtException", this.handleUncaughtException);
@@ -78,7 +73,10 @@ class StackTracer implements IStackTracer {
     } else {
       console.error("Uncaught Exception:", error);
     }
-    process.exit(1);
+    // Don't exit the process during testing
+    if (process.env.NODE_ENV !== "test") {
+      process.exit(1);
+    }
   };
 
   private handleUnhandledRejection = (reason: any) => {
@@ -95,7 +93,10 @@ class StackTracer implements IStackTracer {
     } else {
       console.error("Unhandled Rejection:", reason);
     }
-    process.exit(1);
+    // Don't exit the process during testing
+    if (process.env.NODE_ENV !== "test") {
+      process.exit(1);
+    }
   };
 
   async processError(error: Error | string): Promise<ErrorObject> {

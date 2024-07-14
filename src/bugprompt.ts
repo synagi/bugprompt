@@ -10,6 +10,8 @@ export class Bugprompt {
 
   private constructor() {
     this._config = new Config();
+    this._config.load();
+    this.applyConfig();
   }
 
   public static getInstance(): Bugprompt {
@@ -20,27 +22,23 @@ export class Bugprompt {
   }
 
   public config(): void {
-    console.log("Bugprompt config() called");
-    this._config.load();
-    console.log("Config loaded:", JSON.stringify(this._config, null, 2));
+    this.applyConfig();
+  }
+
+  private applyConfig(): void {
     this.configureStackTracer();
     this.configureLogger();
-    console.log("Bugprompt configuration complete");
   }
 
   private configureStackTracer(): void {
-    console.log("Configuring StackTracer");
     const stackTracerInstance = StackTracer.getInstance();
     if (this._config.stacktrace?.enabled) {
-      console.log("StackTracer enabled in config");
       this._stackTracer = stackTracerInstance;
       stackTracerInstance.enable();
     } else {
-      console.log("StackTracer disabled in config");
       this._stackTracer = null;
       stackTracerInstance.disable();
     }
-    console.log("StackTracer isEnabled:", stackTracerInstance.isEnabled());
   }
 
   private configureLogger(): void {
@@ -57,7 +55,7 @@ export class Bugprompt {
     return this._stackTracer;
   }
 
-  public get Logger(): typeof Logger | null {
+  public get LoggerWrapper(): typeof Logger | null {
     return this._logger;
   }
 }
