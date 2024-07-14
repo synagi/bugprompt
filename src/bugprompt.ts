@@ -7,11 +7,10 @@ export class Bugprompt {
   private _config: Config;
   private _stackTracer: StackTracer | null = null;
   private _logger: typeof Logger | null = null;
+  private _enabled: boolean = false;
 
   private constructor() {
     this._config = new Config();
-    this._config.load();
-    this.applyConfig();
   }
 
   public static getInstance(): Bugprompt {
@@ -21,13 +20,35 @@ export class Bugprompt {
     return Bugprompt.instance;
   }
 
-  public config(): void {
-    this.applyConfig();
+  public enable(): void {
+    if (!this._enabled) {
+      this._config.load();
+      this._enabled = true;
+      this.applyConfig();
+    }
+  }
+
+  public disable(): void {
+    if (this._enabled) {
+      this._enabled = false;
+      this.disableFeatures();
+    }
   }
 
   private applyConfig(): void {
     this.configureStackTracer();
     this.configureLogger();
+  }
+
+  private disableFeatures(): void {
+    if (this._stackTracer) {
+      this._stackTracer.disable();
+      this._stackTracer = null;
+    }
+    if (this._logger) {
+      this._logger.disable();
+      this._logger = null;
+    }
   }
 
   private configureStackTracer(): void {
@@ -57,5 +78,9 @@ export class Bugprompt {
 
   public get LoggerWrapper(): typeof Logger | null {
     return this._logger;
+  }
+
+  public get config(): Config {
+    return this._config;
   }
 }

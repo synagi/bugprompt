@@ -17,18 +17,20 @@
     "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
     "clean": "rm -rf dist/ *.tsbuildinfo",
     "build": "npm run format && npm run prepare",
+    "test:gen": "node --loader ts-node/esm src/__tests__/bugprompt.test.gen.ts",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "docs": "npm run build && node ./dist/docgen/genDocs.js",
     "prepare": "npm run clean && tsc -p ./tsconfig.json"
   },
   "dependencies": {
-    "typescript": "^5.5.3",
-    "@types/node": "^20.14.10",
     "@types/glob": "^8.1.0",
-    "glob": "^11.0.0"
+    "@types/node": "^20.14.10",
+    "glob": "^11.0.0",
+    "typescript": "^5.5.3"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
+    "axios": "^1.7.2",
     "jest": "^29.7.0",
     "prettier": "^3.3.2",
     "ts-jest": "^29.2.2",

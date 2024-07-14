@@ -1,10 +1,11 @@
+// test.js
 import bugprompt from "./dist/index.js";
 
 async function runTests() {
   console.log("Bugprompt instance:", bugprompt);
 
   // Configure bugprompt
-  bugprompt.config();
+  bugprompt.enable();
 
   // Test logging
   console.log("Testing bugprompt logging:");

@@ -3,13 +3,6 @@ import path from "path";
 import fs from "fs";
 import StackTraceUtil from "./StackTraceUtil.js";
 
-export interface ErrorProps {
-  name: string;
-  message: string;
-  stack: string | StackEntry[] | [];
-  params: string;
-}
-
 export interface StackEntry {
   file: string;
   line: number;
@@ -17,11 +10,20 @@ export interface StackEntry {
   code?: string;
 }
 
+export interface ErrorProps {
+  name: string;
+  message: string;
+  stack: string | StackEntry[] | [];
+  params: string;
+}
+
 export interface ErrorObject {
   error: ErrorProps;
   log: string;
   formatted: string;
 }
+
+// ... rest of the ErrorUtil code
 
 class ErrorUtil {
   static async convertError(
