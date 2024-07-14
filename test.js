@@ -8,12 +8,12 @@ bugprompt.config();
 
 // Test logging
 console.log("Testing bugprompt logging:");
-if (bugprompt.LoggerWrapper) {
-  bugprompt.LoggerWrapper.info("This is an info message");
-  bugprompt.LoggerWrapper.warn("This is a warning message");
-  bugprompt.LoggerWrapper.error("This is an error message");
+if (bugprompt.Wrapper) {
+  bugprompt.Wrapper.info("This is an info message");
+  bugprompt.Wrapper.warn("This is a warning message");
+  bugprompt.Wrapper.error("This is an error message");
 } else {
-  console.log("Logger is not enabled");
+  console.log(" is not enabled");
 }
 
 // Test synchronous error

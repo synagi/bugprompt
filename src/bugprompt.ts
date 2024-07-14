@@ -1,12 +1,12 @@
 import Config from "./config/Config.js";
 import StackTracer from "./StackTracer.js";
-import LoggerWrapper from "./log/LoggerWrapper.js";
+import Logger from "./Logger.js";
 
 export class Bugprompt {
   private static instance: Bugprompt;
   private _config: Config;
   private _stackTracer: StackTracer | null = null;
-  private _logger: typeof LoggerWrapper | null = null;
+  private _logger: typeof Logger | null = null;
 
   private constructor() {
     this._config = new Config();
@@ -45,11 +45,11 @@ export class Bugprompt {
 
   private configureLogger(): void {
     if (this._config.log?.enabled) {
-      this._logger = LoggerWrapper;
-      LoggerWrapper.enable();
+      this._logger = Logger;
+      Logger.enable();
     } else {
       this._logger = null;
-      LoggerWrapper.disable();
+      Logger.disable();
     }
   }
 
@@ -57,7 +57,7 @@ export class Bugprompt {
     return this._stackTracer;
   }
 
-  public get LoggerWrapper(): typeof LoggerWrapper | null {
+  public get Logger(): typeof Logger | null {
     return this._logger;
   }
 }

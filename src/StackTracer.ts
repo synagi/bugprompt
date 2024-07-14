@@ -1,5 +1,5 @@
 import ErrorUtil, { ErrorObject } from "./utils/ErrorUtil.js";
-import Logger from "./log/Logger.js";
+import Logger from "./Logger.js";
 
 export interface IStackTracer {
   enable(): void;
@@ -71,7 +71,7 @@ class StackTracer implements IStackTracer {
     if (this._enabled) {
       const processedError = this.processErrorSync(error);
       this.logger.logSync(
-        "exception",
+        "EXCEPTION",
         "Uncaught Exception:",
         processedError.formatted,
       );
@@ -88,7 +88,7 @@ class StackTracer implements IStackTracer {
         reason instanceof Error ? reason : new Error(String(reason)),
       );
       this.logger.logSync(
-        "exception",
+        "EXCEPTION",
         "Unhandled Rejection:",
         processedError.formatted,
       );

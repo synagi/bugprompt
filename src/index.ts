@@ -1,5 +1,6 @@
 // index.ts
 import { Bugprompt } from "./bugprompt.js";
+import Logger from "./Logger.js";
 
 const bugprompt = Bugprompt.getInstance();
-export default bugprompt;
+export { bugprompt as default, Logger };
