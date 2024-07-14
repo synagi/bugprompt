@@ -1,4 +1,5 @@
 import ErrorUtil, { ErrorObject } from "./utils/ErrorUtil.js";
+import Logger from "./log/Logger.js";
 
 export interface IStackTracer {
   enable(): void;
@@ -11,8 +12,11 @@ export interface IStackTracer {
 class StackTracer implements IStackTracer {
   private static instance: StackTracer;
   private _enabled: boolean = false;
+  private logger: typeof Logger;
 
-  private constructor() {}
+  private constructor() {
+    this.logger = Logger;
+  }
 
   public static getInstance(): StackTracer {
     if (!StackTracer.instance) {
@@ -65,9 +69,11 @@ class StackTracer implements IStackTracer {
   private handleUncaughtException = (error: Error) => {
     console.log("Uncaught exception handler called, enabled:", this._enabled);
     if (this._enabled) {
-      console.error(
+      const processedError = this.processErrorSync(error);
+      this.logger.logSync(
+        "exception",
         "Uncaught Exception:",
-        this.processErrorSync(error).formatted,
+        processedError.formatted,
       );
     } else {
       console.error("Uncaught Exception:", error);
@@ -76,12 +82,15 @@ class StackTracer implements IStackTracer {
   };
 
   private handleUnhandledRejection = (reason: any) => {
+    console.log("Unhandled rejection handler called, enabled:", this._enabled);
     if (this._enabled) {
-      console.error(
+      const processedError = this.processErrorSync(
+        reason instanceof Error ? reason : new Error(String(reason)),
+      );
+      this.logger.logSync(
+        "exception",
         "Unhandled Rejection:",
-        this.processErrorSync(
-          reason instanceof Error ? reason : new Error(String(reason)),
-        ).formatted,
+        processedError.formatted,
       );
     } else {
       console.error("Unhandled Rejection:", reason);

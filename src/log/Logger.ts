@@ -103,7 +103,7 @@ class Logger {
   }
 
   // Sync methods for global unhandled errors and rejections
-  private logSync(level: LogLevel, ...messages: any[]): void {
+  public logSync(level: LogLevel, ...messages: any[]): void {
     let consoleLevel: "log" | "warn" | "error" | "debug" | "trace" =
       level === "exception" ? "error" : (level as any);
     let formattedMessages: string[] = [];
@@ -119,13 +119,15 @@ class Logger {
       }
     }
 
-    // File output (synchronous) only if enabled
+    // Console output
+    console[consoleLevel](...formattedMessages);
+
+    // File output only if enabled
     if (this.isNode && this.enabled) {
       const logEntry = this.formatLogEntry(level, formattedMessages.join(" "));
       FileUtils.logToFileSync(logEntry, this.maxFileSize);
     }
   }
-
 }
 
 export default Logger.getInstance();

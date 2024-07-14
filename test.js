@@ -24,30 +24,13 @@ function generateSyncError() {
 
 generateSyncError();
 
-/*
-try {
-  generateSyncError();
-} catch (error) {
-  if (bugprompt.StackTracer) {
-    console.error(
-      "Caught synchronous error:",
-      bugprompt.StackTracer.processErrorSync(error).formatted,
-    );
-  } else {
-    console.error("Caught synchronous error:", error);
-  }
-}
-
 // Test asynchronous error
 console.log("\nGenerating an asynchronous error to test stack trace:");
 async function generateAsyncError() {
   throw new Error("Test asynchronous error for stack trace");
 }
 
-generateAsyncError().catch(async (error) => {
-  const processedError = await bugprompt.StackTracer.processError(error);
-  console.error("Caught asynchronous error:", processedError.formatted);
-});
+generateAsyncError();
 
 // Generate an unhandled promise rejection
 console.log("\nGenerating an unhandled promise rejection:");
@@ -66,4 +49,3 @@ setTimeout(() => {
   console.log("\nTest complete. Check your log file for results.");
   process.exit(0);
 }, 1000);
-*/
