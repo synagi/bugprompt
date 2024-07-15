@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
-import ErrorUtils from "./utils/ErrorUtil.js";
-import EnvironmentUtils from "./utils/EnvUtil.js";
-import ProjectUtils from "./utils/ProjectUtil.js";
+import ErrorUtils from "../utils/ErrorUtil.js";
+import EnvironmentUtils from "../utils/EnvUtil.js";
+import ProjectUtils from "../utils/ProjectUtil.js";
 
 const MAX_FILE_SIZE_MB = 10;
 

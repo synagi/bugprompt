@@ -1,4 +1,4 @@
-import ErrorUtil, { ErrorObject } from "./utils/ErrorUtil.js";
+import ErrorUtil, { ErrorObject } from "../utils/ErrorUtil.js";
 import Logger from "./Logger.js";
 
 export interface IStackTracer {

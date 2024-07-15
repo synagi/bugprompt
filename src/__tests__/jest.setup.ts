@@ -1,7 +1,7 @@
 // jest.setup.ts
-import bugprompt from "./index.js";
-import { generateTestCases } from "./utils/TestUtil.js";
-import { ErrorObject } from "./utils/ErrorUtil.js";
+import bugprompt from "../index.js";
+import { generateTestCases } from "../utils/TestUtil.js";
+import { ErrorObject } from "../utils/ErrorUtil.js";
 import fs from "fs";
 import path from "path";
 

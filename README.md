@@ -1,24 +1,24 @@
 # BugPrompt
 
-Generate docs from code for LLM prompting for easy fixing of bugs and development.
+Generate docs from code for easier LLM prompting.
 
 ## Installation
 
 ```bash
-npm install bugsquash
+npm install https://github.com/synagi/bugprompt.git
 ```
 
 ## Generating Code Docs
 
 ```json
   "scripts": {
-    "docs": "node ./node_modules/@synagi/nodejs-util/dist/docgen/genDocs.js"
+    "docs": "node ./node_modules/@synagi/bugprompt/dist/genDocs.js"
   }
 ```
 
 ## Config Breakdown
 
-The `bugprompt.json` config auto created in the root lets you create sets of docs containing just the code you want:
+The `bugprompt.json` config (auto-created in the root on first-use) lets you create sets of docs containing just the code you want:
 
 - Create multiple docs with different sets of files levels of detail
 - Set up templates for consistent doc styling
@@ -26,6 +26,7 @@ The `bugprompt.json` config auto created in the root lets you create sets of doc
 - Sanitize sensitive info via search/replace
 - Optional stacktrace and logging (WIP so disbled for now)
 
+### Example Config
 ```js
 {
   "docs": {
@@ -100,7 +101,7 @@ The `bugprompt.json` config auto created in the root lets you create sets of doc
         ]
       }
     ]
-  }
+  },
   "stacktrace": {
     "enabled": false                // Enable or disable stacktrace functionality
   },

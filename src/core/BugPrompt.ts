@@ -1,4 +1,4 @@
-import Config from "./config/Config.js";
+import Config from "../config/Config.js";
 import StackTracer from "./StackTracer.js";
 import Logger from "./Logger.js";
 

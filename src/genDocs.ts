@@ -1,3 +1,3 @@
-import { DocsBuilder } from "./DocsBuilder.js";
+import { DocsBuilder } from "./core/DocsBuilder.js";
 
 DocsBuilder.build();

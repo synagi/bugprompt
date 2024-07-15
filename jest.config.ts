@@ -6,7 +6,7 @@ const config: Config.InitialOptions = {
   rootDir: "./dist",
   testMatch: ["**/__tests__/**/*.test.js"],
   moduleFileExtensions: ["js", "json", "node"],
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  setupFilesAfterEnv: ["<rootDir>/__tests__/jest.setup.js"],
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },

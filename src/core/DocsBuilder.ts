@@ -1,7 +1,7 @@
 import path from "path";
-import Config, { CONFIG_NAME } from "./config/Config.js";
-import ProjectUtil from "./utils/ProjectUtil.js";
-import DocUtil from "./utils/DocsUtil.js";
+import Config, { CONFIG_NAME } from "../config/Config.js";
+import ProjectUtil from "../utils/ProjectUtil.js";
+import DocUtil from "../utils/DocsUtil.js";
 
 interface Template {
   name: string;
