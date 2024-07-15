@@ -1,6 +1,5 @@
 import ProjectUtil from "./ProjectUtil.js";
 import path from "path";
-import fs from "fs";
 import StackTraceUtil from "./StackTraceUtil.js";
 
 export interface StackEntry {
@@ -18,27 +17,30 @@ export interface ErrorProps {
 }
 
 export interface ErrorObject {
-  error: ErrorProps;
+  error: {
+    name: string;
+    message: string;
+    stack: StackEntry[] | string;
+    params: string;
+  };
   log: string;
   formatted: string;
 }
 
-// ... rest of the ErrorUtil code
-
 class ErrorUtil {
   static async convertError(
     error: Error | string,
-    newCode: any = null,
+    _newCode: any = null,
   ): Promise<ErrorObject> {
-    let errorObject = await this._processError(error, newCode);
+    let errorObject = await this._processError(error);
     return this._formatErrorObject(errorObject);
   }
 
   static convertErrorSync(
     error: Error | string,
-    newCode: any = null,
+    _newCode: any = null,
   ): ErrorObject {
-    let errorObject = this._processErrorSync(error, newCode);
+    let errorObject = this._processErrorSync(error);
     return this._formatErrorObject(errorObject);
   }
 
@@ -52,27 +54,20 @@ class ErrorUtil {
 
   private static async _processError(
     error: Error | string,
-    newCode: any,
   ): Promise<ErrorProps> {
     const errorProps = this._sharedProcessErrorLogic(error);
 
     if (Array.isArray(errorProps.stack)) {
-      errorProps.stack = await this._fetchLinesOfCode(
-        errorProps.stack,
-        newCode,
-      );
+      errorProps.stack = await this._fetchLinesOfCode(errorProps.stack);
     }
     return errorProps;
   }
 
-  private static _processErrorSync(
-    error: Error | string,
-    newCode: any,
-  ): ErrorProps {
+  private static _processErrorSync(error: Error | string): ErrorProps {
     const errorProps = this._sharedProcessErrorLogic(error);
 
     if (Array.isArray(errorProps.stack)) {
-      errorProps.stack = this._fetchLinesOfCodeSync(errorProps.stack, newCode);
+      errorProps.stack = this._fetchLinesOfCodeSync(errorProps.stack);
     }
     return errorProps;
   }
@@ -86,6 +81,9 @@ class ErrorUtil {
         params: "",
       };
     }
+
+    //console.log("Raw error stack trace:");
+    //console.log(ProjectUtil.trim(error.stack));
 
     let errorProps: ErrorProps = {
       name: error.name || "Unknown Error",
@@ -208,46 +206,20 @@ class ErrorUtil {
 
   private static async _fetchLinesOfCode(
     filteredProjectStack: StackEntry[],
-    newCode: any[] | null = null,
   ): Promise<StackEntry[]> {
-    if (!Array.isArray(filteredProjectStack)) {
-      return [];
-    }
-
     return Promise.all(
       filteredProjectStack.map(async (entry) => {
-        if (!entry.file) {
-          return { ...entry, code: "<no-data>" };
-        }
-
-        if (newCode) {
-          const matchingCodeEntry = newCode.find(
-            (codeEntry) =>
-              codeEntry.file === entry.file && codeEntry.line === entry.line,
-          );
-          if (matchingCodeEntry && matchingCodeEntry.code) {
-            return { ...entry, code: matchingCodeEntry.code };
-          }
-        }
-
-        const absoluteFilePath = ProjectUtil.getAbsoluteFilePath(entry.file);
-        if (!fs.existsSync(absoluteFilePath)) {
-          return { ...entry, code: "<no-data>" };
-        }
-
         try {
-          const fileContents = await fs.promises.readFile(
-            absoluteFilePath,
-            "utf8",
+          const codeLine = await ProjectUtil.getCodeLineAsync(
+            entry.file,
+            entry.line,
           );
-          const lines = fileContents.split("\n");
-          const codeLine =
-            lines[parseInt(entry.line.toString()) - 1]
-              ?.trim()
-              .substring(0, 100) || "";
-          return { ...entry, code: codeLine };
+          return { ...entry, code: codeLine || "<no-data>" };
         } catch (error) {
-          return { ...entry, code: "<error-fetching-code>" };
+          console.warn(
+            `Failed to get code line for ${entry.file}:${entry.line}. Error: ${(error as Error).message}`,
+          );
+          return { ...entry, code: "<no-data>" };
         }
       }),
     );
@@ -255,42 +227,16 @@ class ErrorUtil {
 
   private static _fetchLinesOfCodeSync(
     filteredProjectStack: StackEntry[],
-    newCode: any[] | null = null,
   ): StackEntry[] {
-    if (!Array.isArray(filteredProjectStack)) {
-      return [];
-    }
-
     return filteredProjectStack.map((entry) => {
-      if (!entry.file) {
-        return { ...entry, code: "<no-data>" };
-      }
-
-      if (newCode) {
-        const matchingCodeEntry = newCode.find(
-          (codeEntry) =>
-            codeEntry.file === entry.file && codeEntry.line === entry.line,
-        );
-        if (matchingCodeEntry && matchingCodeEntry.code) {
-          return { ...entry, code: matchingCodeEntry.code };
-        }
-      }
-
-      const absoluteFilePath = ProjectUtil.getAbsoluteFilePath(entry.file);
-      if (!fs.existsSync(absoluteFilePath)) {
-        return { ...entry, code: "<no-data>" };
-      }
-
       try {
-        const fileContents = fs.readFileSync(absoluteFilePath, "utf8");
-        const lines = fileContents.split("\n");
-        const codeLine =
-          lines[parseInt(entry.line.toString()) - 1]
-            ?.trim()
-            .substring(0, 100) || "";
-        return { ...entry, code: codeLine };
+        const codeLine = ProjectUtil.getCodeLine(entry.file, entry.line);
+        return { ...entry, code: codeLine || "<no-data>" };
       } catch (error) {
-        return { ...entry, code: "<error-fetching-code>" };
+        console.warn(
+          `Failed to get code line for ${entry.file}:${entry.line}. Error: ${(error as Error).message}`,
+        );
+        return { ...entry, code: "<no-data>" };
       }
     });
   }
