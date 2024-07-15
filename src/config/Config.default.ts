@@ -39,7 +39,7 @@ export const DEFAULT_CONFIG: BugpromptConfig = {
               "**/*.jsx",
             ],
             exclude: [
-              "node_modules/**/*",
+              "**/node_modules/**/*",
               "dist/**/*",
               "bin/**/*",
               "*.json",
@@ -54,7 +54,7 @@ export const DEFAULT_CONFIG: BugpromptConfig = {
         content: [
           {
             reference: "projectname",
-            headerPrefix: "// .",
+            headerPrefix: "//",
             useCodeblocks: false,
           },
         ],

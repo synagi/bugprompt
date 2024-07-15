@@ -9,12 +9,15 @@ npm install --save-dev https://github.com/synagi/bugprompt.git
 ```
 
 ## Run with Node.js
+
 Docs will be generated to `./bin/bugprompt/` in your project root:
+
 ```bash
 node ./node_modules/@synagi/bugprompt/dist/genDocs.js
 ```
 
 ## NPM Script
+
 ```json
   "scripts": {
     "docs": "node ./node_modules/@synagi/bugprompt/dist/genDocs.js"
@@ -32,6 +35,7 @@ Use the `./bugprompt.json` config (auto-generated on first-run) to define sets o
 - Optional stacktrace and logging (WIP so disbled for now)
 
 ### Example Config
+
 ```js
 {
   "docs": {
@@ -70,7 +74,7 @@ Use the `./bugprompt.json` config (auto-generated on first-run) to define sets o
               "**/*.jsx"
             ],
             "exclude": [                       // File patterns to exclude
-              "node_modules/**/*",
+              "**/node_modules/**/*",
               "dist/**/*",
               "bin/**/*",
               "*.json",
@@ -85,7 +89,7 @@ Use the `./bugprompt.json` config (auto-generated on first-run) to define sets o
         "content": [
           {
             "reference": "projectname",        // Inherets the content block titled "projectname"
-            "headerPrefix": "// .",
+            "headerPrefix": "//",
             "useCodeblocks": false             // Don't wrap file contents in code blocks
           }
         ]
