@@ -31,7 +31,7 @@ interface DocsConfig {
       description?: string;
       headerPrefix?: string;
       root?: string;
-      include: string[];
+      include?: string[];
       exclude?: string[];
       reference?: string;
       useCodeblocks?: boolean;

@@ -1,5 +1,5 @@
 {
-  "name": "@synagi/nodejs-util",
+  "name": "@synagi/bugprompt",
   "version": "1.0.0",
   "type": "module",
   "packageManager": "npm@9.5.0",
@@ -18,10 +18,8 @@
     "clean": "rm -rf dist/ *.tsbuildinfo",
     "build": "npm run format && npm run prepare",
     "test:gen": "npm run build && node dist/__tests__/stacktrace.data.gen.js",
-    "test:setup": "npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js dist/__tests__/setup.test.js",
-    "test:stack": "npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js dist/__tests__/stacktrace.test.js",
     "test": "npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "docs": "npm run build && node ./dist/docgen/genDocs.js",
+    "docs": "npm run build && node ./dist/genDocs.js",
     "prepare": "npm run clean && tsc -p ./tsconfig.json"
   },
   "dependencies": {

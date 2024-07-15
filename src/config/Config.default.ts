@@ -1,19 +1,13 @@
 import { BugpromptConfig } from "./Config";
 
 export const DEFAULT_CONFIG: BugpromptConfig = {
-  stacktrace: {
-    enabled: false,
-  },
-  log: {
-    enabled: false,
-  },
   docs: {
     outputDir: "bin/",
     templates: [
       {
         name: "default",
         header:
-          "# Source code\nBelow is the latest source code of the project, showing the contents of each file along with it's relative path.  Analyze it directly to understand the latest code and its structure:",
+          "# Source code\nThis doc contains the latest source code of the project, with each script given with its relative path to the project root.  Analyze all the code directly to understand its structure, flow and purpose:",
         footer: "",
       },
     ],
@@ -32,7 +26,7 @@ export const DEFAULT_CONFIG: BugpromptConfig = {
           {
             title: "projectname",
             description:
-              "Any important project details or gotchas for the LLM go here...",
+              "Here are the project files (and any additional notes, instructions or gotchas go here)...",
             headerPrefix: "##",
             root: "",
             include: [
@@ -62,8 +56,6 @@ export const DEFAULT_CONFIG: BugpromptConfig = {
             reference: "projectname",
             headerPrefix: "// .",
             useCodeblocks: false,
-            include: ["**/*"],
-            exclude: [],
           },
         ],
       },
@@ -79,5 +71,11 @@ export const DEFAULT_CONFIG: BugpromptConfig = {
         ],
       },
     ],
+  },
+  stacktrace: {
+    enabled: false,
+  },
+  log: {
+    enabled: false,
   },
 };

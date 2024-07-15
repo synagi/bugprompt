@@ -18,95 +18,130 @@ class MinifyUtil {
 
   // Minification methods
   static minifyJS(content: string, minifyLevel: number): string {
-    if (minifyLevel === 0) {
+    try {
+      if (minifyLevel === 0) {
+        return content;
+      }
+
+      if (minifyLevel === 1) {
+        content = this.spacesToTabs(content);
+        content = this.collapseSingleLineBlocks(content);
+        content = this.normalizeLineBreaks(content);
+        content = content.replace(/\n\s*\n/g, "\n");
+      }
+
+      if (minifyLevel >= 2) {
+        content = content
+          .replace(/\/\/.*$/gm, "")
+          .replace(/\/\*[\s\S]*?\*\//g, "")
+          .replace(/\s+/g, " ")
+          .replace(/; /g, ";")
+          .replace(/ {/g, "{")
+          .replace(/ }/g, "}")
+          .replace(/: /g, ":");
+      }
+
+      return content.trim();
+    } catch (error) {
+      console.warn(
+        `Error, file not minified: ${error instanceof Error ? error.message : String(error)}.`,
+      );
       return content;
     }
-
-    if (minifyLevel === 1) {
-      content = this.spacesToTabs(content);
-      content = this.collapseSingleLineBlocks(content);
-      content = this.normalizeLineBreaks(content);
-      content = content.replace(/\n\s*\n/g, "\n");
-    }
-
-    if (minifyLevel >= 2) {
-      content = content
-        .replace(/\/\/.*$/gm, "")
-        .replace(/\/\*[\s\S]*?\*\//g, "")
-        .replace(/\s+/g, " ")
-        .replace(/; /g, ";")
-        .replace(/ {/g, "{")
-        .replace(/ }/g, "}")
-        .replace(/: /g, ":");
-    }
-
-    return content.trim();
   }
 
   static minifyJSON(content: string, minifyLevel: number): string {
-    if (minifyLevel === 0) {
+    try {
+      if (minifyLevel === 0) {
+        return content;
+      } else if (minifyLevel === 1) {
+        return JSON.stringify(JSON.parse(content), null, 2);
+      } else {
+        return JSON.stringify(JSON.parse(content));
+      }
+    } catch (error) {
+      console.warn(
+        `Error, file not minified: ${error instanceof Error ? error.message : String(error)}.`,
+      );
       return content;
-    } else if (minifyLevel === 1) {
-      return JSON.stringify(JSON.parse(content), null, 2);
-    } else {
-      return JSON.stringify(JSON.parse(content));
     }
   }
 
   static minifyPython(content: string, minifyLevel: number): string {
-    if (minifyLevel === 0) {
+    try {
+      if (minifyLevel === 0) {
+        return content;
+      }
+
+      content = content.replace(/[ \t]+$/gm, "");
+      content = content.replace(/\n\s*\n/g, "\n");
+
+      if (minifyLevel >= 2) {
+        content = content.replace(/#.*$/gm, "");
+      }
+
+      return content.trim();
+    } catch (error) {
+      console.warn(
+        `Error, file not minified: ${error instanceof Error ? error.message : String(error)}.`,
+      );
       return content;
     }
-
-    content = content.replace(/[ \t]+$/gm, "");
-    content = content.replace(/\n\s*\n/g, "\n");
-
-    if (minifyLevel >= 2) {
-      content = content.replace(/#.*$/gm, "");
-    }
-
-    return content.trim();
   }
 
   static minifyHTML(content: string, minifyLevel: number): string {
-    if (minifyLevel === 0) {
+    try {
+      if (minifyLevel === 0) {
+        return content;
+      }
+
+      if (minifyLevel === 1) {
+        content = this.collapseSingleLineBlocks(content);
+        content = this.normalizeLineBreaks(content);
+        content = content.replace(/\n\s*\n/g, "\n");
+      }
+
+      if (minifyLevel >= 2) {
+        content = content.replace(/<!--[\s\S]*?-->/g, "");
+        content = content.replace(/\s+/g, " ");
+      }
+
+      return content.trim();
+    } catch (error) {
+      console.warn(
+        `Error, file not minified: ${error instanceof Error ? error.message : String(error)}.`,
+      );
       return content;
     }
-
-    if (minifyLevel === 1) {
-      content = this.collapseSingleLineBlocks(content);
-      content = this.normalizeLineBreaks(content);
-      content = content.replace(/\n\s*\n/g, "\n");
-    }
-
-    if (minifyLevel >= 2) {
-      content = content.replace(/<!--[\s\S]*?-->/g, "");
-      content = content.replace(/\s+/g, " ");
-    }
-
-    return content.trim();
   }
 
   static minifyCSS(content: string, minifyLevel: number): string {
-    if (minifyLevel === 0) {
+    try {
+      if (minifyLevel === 0) {
+        return content;
+      }
+
+      if (minifyLevel === 1) {
+        content = this.spacesToTabs(content);
+        content = this.collapseSingleLineBlocks(content);
+        content = this.normalizeLineBreaks(content);
+        content = content.replace(/\n\s*\n/g, "\n");
+      }
+
+      if (minifyLevel >= 2) {
+        content = content
+          .replace(/\/\/.*$/gm, "")
+          .replace(/\/\*[\s\S]*?\*\//g, "")
+          .replace(/\s+/g, " ");
+      }
+
+      return content.trim();
+    } catch (error) {
+      console.warn(
+        `Error, file not minified: ${error instanceof Error ? error.message : String(error)}.`,
+      );
       return content;
     }
-
-    if (minifyLevel === 1) {
-      content = this.spacesToTabs(content);
-      content = this.collapseSingleLineBlocks(content);
-      content = this.normalizeLineBreaks(content);
-      content = content.replace(/\n\s*\n/g, "\n");
-    }
-
-    if (minifyLevel >= 2) {
-      content = content
-        .replace(/\/\/.*$/gm, "")
-        .replace(/\/\*[\s\S]*?\*\//g, "")
-        .replace(/\s+/g, " ");
-    }
-
-    return content.trim();
   }
 
   static minifySCSS(content: string, minifyLevel: number): string {
@@ -114,21 +149,28 @@ class MinifyUtil {
   }
 
   static minifyMarkdown(content: string, minifyLevel: number): string {
-    if (minifyLevel === 0) {
+    try {
+      if (minifyLevel === 0) {
+        return content;
+      } else if (minifyLevel === 1) {
+        return content.replace(/[ \t]+$/gm, "").replace(/\n{2,}/g, "\n\n");
+      } else {
+        return content
+          .split("\n")
+          .map((line) => {
+            if (/^(\s*>|\s*[-+*]|\s*\d+\.)\s+/.test(line)) {
+              return line.replace(/[ \t]+$/g, "");
+            }
+            return line.trim();
+          })
+          .join("\n")
+          .replace(/\n{2,}/g, "\n\n");
+      }
+    } catch (error) {
+      console.warn(
+        `Error, file not minified: ${error instanceof Error ? error.message : String(error)}.`,
+      );
       return content;
-    } else if (minifyLevel === 1) {
-      return content.replace(/[ \t]+$/gm, "").replace(/\n{2,}/g, "\n\n");
-    } else {
-      return content
-        .split("\n")
-        .map((line) => {
-          if (/^(\s*>|\s*[-+*]|\s*\d+\.)\s+/.test(line)) {
-            return line.replace(/[ \t]+$/g, "");
-          }
-          return line.trim();
-        })
-        .join("\n")
-        .replace(/\n{2,}/g, "\n\n");
     }
   }
 

@@ -9,8 +9,8 @@ interface ContentItem {
   root?: string;
   title?: string;
   description?: string;
-  include: string[];
-  exclude?: string[];
+  include?: string[] | null;
+  exclude?: string[] | null;
   headerRootPath?: boolean;
   headerRelativePath?: boolean;
   headerPrefix?: string;
@@ -36,13 +36,20 @@ class DocUtil {
     minificationLevel: number,
   ): Promise<string> {
     console.log(
-      `Processing content item with include patterns: ${contentItem.include}`,
+      `Processing content item:`,
+      JSON.stringify(contentItem, null, 2),
     );
-    console.log(`Exclude patterns: ${contentItem.exclude}`);
 
-    const itemRoot = contentItem.root
-      ? path.join(projectRoot, contentItem.root)
-      : projectRoot;
+    const includePatterns = contentItem.include || ["**/*"];
+    const excludePatterns = contentItem.exclude || [];
+
+    console.log(`Include patterns:`, includePatterns);
+    console.log(`Exclude patterns:`, excludePatterns);
+
+    const itemRoot = contentItem.root || "";
+    const fullItemRoot = path.join(projectRoot, itemRoot);
+    console.log(`Full item root:`, fullItemRoot);
+
     let content = "";
 
     if (contentItem.title) {
@@ -54,16 +61,20 @@ class DocUtil {
     }
 
     const globOptions = {
-      cwd: itemRoot,
+      cwd: fullItemRoot,
       nodir: true,
-      ignore: contentItem.exclude,
+      ignore: excludePatterns,
       absolute: true,
     };
     console.log(`Glob options:`, JSON.stringify(globOptions, null, 2));
 
-    for (const pattern of contentItem.include) {
+    for (const pattern of includePatterns) {
       const files = await glob(pattern, globOptions);
-      console.log(`Glob pattern ${pattern} matched files: ${files.length}`);
+      console.log(`Glob pattern ${pattern} matched files:`, files.length);
+
+      if (files.length > 0) {
+        console.log(`Sample matched files:`, files.slice(0, 5));
+      }
 
       for (const fullPath of files) {
         if (!processedFiles.has(fullPath)) {
@@ -73,7 +84,7 @@ class DocUtil {
             fullPath,
             MinifyUtil,
             contentItem,
-            itemRoot,
+            fullItemRoot,
             minificationLevel,
           );
           content += fileContent;

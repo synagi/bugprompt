@@ -21,8 +21,8 @@ interface ContentItem {
   root?: string;
   title?: string;
   description?: string;
-  include: string[];
-  exclude?: string[];
+  include?: string[] | null;
+  exclude?: string[] | null;
   headerRootPath?: boolean;
   headerRelativePath?: boolean;
   headerPrefix?: string;
@@ -40,6 +40,7 @@ export class DocsBuilder {
   private config: DocsConfig;
   private projectRoot: string;
   private outputPath: string;
+  private contentMap: Map<string, ContentItem> = new Map();
 
   constructor(config: DocsConfig, outputPath: string) {
     this.validateConfig(config);
@@ -57,6 +58,7 @@ export class DocsBuilder {
     );
     console.log(`Output path: ${this.outputPath}`);
     console.log(`Config:`, JSON.stringify(this.config, null, 2));
+    this.buildContentMap();
   }
 
   private validateConfig(config: DocsConfig): void {
@@ -67,6 +69,20 @@ export class DocsBuilder {
     ) {
       throw new Error("Invalid documentation configuration");
     }
+  }
+
+  private buildContentMap(): void {
+    for (const document of this.config.documents) {
+      for (const contentItem of document.content) {
+        if (contentItem.title) {
+          this.contentMap.set(contentItem.title, contentItem);
+        }
+      }
+    }
+    console.log(
+      "Content map built with keys:",
+      Array.from(this.contentMap.keys()),
+    );
   }
 
   public async build(): Promise<void> {
@@ -112,9 +128,12 @@ export class DocsBuilder {
     const minificationLevel = document.minificationLevel || 0;
 
     for (const contentItem of document.content) {
-      console.log(`Processing content for title: ${contentItem.title}`);
+      console.log(
+        `Processing content for title: ${contentItem.title || "undefined"}`,
+      );
+      const resolvedContentItem = this.resolveContentItem(contentItem);
       const fileContents = await DocUtil.processContentItem(
-        contentItem,
+        resolvedContentItem,
         processedFiles,
         this.projectRoot,
         minificationLevel,
@@ -127,6 +146,30 @@ export class DocsBuilder {
     }
 
     return documentationContent;
+  }
+
+  private resolveContentItem(contentItem: ContentItem): ContentItem {
+    if (contentItem.reference) {
+      const referenceItem = this.contentMap.get(contentItem.reference);
+      if (referenceItem) {
+        console.log(`Resolving reference for ${contentItem.reference}`);
+        return this.mergeContentItems(contentItem, referenceItem);
+      } else {
+        console.warn(`Referenced item '${contentItem.reference}' not found.`);
+      }
+    }
+    return contentItem;
+  }
+
+  private mergeContentItems(
+    target: ContentItem,
+    source: ContentItem,
+  ): ContentItem {
+    const merged: ContentItem = { ...source, ...target };
+    merged.include = target.include || source.include;
+    merged.exclude = target.exclude || source.exclude;
+    console.log(`Merged content item:`, JSON.stringify(merged, null, 2));
+    return merged;
   }
 
   public static async build(): Promise<void> {
@@ -157,9 +200,4 @@ export class DocsBuilder {
       console.error("Error in documentation generation:", error);
     }
   }
-}
-
-// This allows the script to be run directly from the command line
-if (require.main === module) {
-  DocsBuilder.build();
 }
