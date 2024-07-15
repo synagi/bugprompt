@@ -18,7 +18,7 @@ npm install https://github.com/synagi/bugprompt.git
 
 ## Config Breakdown
 
-The `bugprompt.json` config (auto-created in the root on first-use) lets you create sets of docs containing just the code you want:
+The `./bugprompt.json` config (auto-gen'd on first-run) lets you create sets of docs containing just the code you want:
 
 - Create multiple docs with different sets of files levels of detail
 - Set up templates for consistent doc styling
