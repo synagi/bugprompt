@@ -1,0 +1,245 @@
+{
+  "referenceError": {
+    "error": {
+      "name": "ReferenceError",
+      "message": "nonExistentVariable is not defined",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 16,
+          "at": "ErrorGenerator.referenceError",
+          "code": "        return nonExistentVariable;"
+        },
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 118,
+          "at": "generateTestCases",
+          "code": "            await errorGen[method]();"
+        },
+        {
+          "file": "src/__tests__/stacktrace.data.gen.ts",
+          "line": 36,
+          "at": "main",
+          "code": "        const testCases = await generateTestCases(bugprompt);"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"ReferenceError\",\"message\":\"nonExistentVariable is not defined\",\"stack\":[{\"file\":\"src/utils/TestUtil.ts\",\"line\":16,\"at\":\"ErrorGenerator.referenceError\",\"code\":\"        return nonExistentVariable;\"},{\"file\":\"src/utils/TestUtil.ts\",\"line\":118,\"at\":\"generateTestCases\",\"code\":\"            await errorGen[method]();\"},{\"file\":\"src/__tests__/stacktrace.data.gen.ts\",\"line\":36,\"at\":\"main\",\"code\":\"        const testCases = await generateTestCases(bugprompt);\"}]}",
+    "formatted": "\n\u001b[91mnonExistentVariable is not defined\u001b[0m \u001b[1m(ReferenceError)\u001b[0m\n\n> \u001b[91mTestUtil.ts:16\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.referenceError:\n    \u001b[1m        return nonExistentVariable;\u001b[0m\u001b[2m\n    ```\u001b[0m\n> \u001b[91mTestUtil.ts:118\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // generateTestCases:\n    \u001b[1m            await errorGen[method]();\u001b[0m\u001b[2m\n    ```\u001b[0m\n> \u001b[91mstacktrace.data.gen.ts:36\u001b[0m    \u001b[2m(src/__tests__/stacktrace.data.gen.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // main:\n    \u001b[1m        const testCases = await generateTestCases(bugprompt);\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "typeError": {
+    "error": {
+      "name": "TypeError",
+      "message": "obj is not a function",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 20,
+          "at": "ErrorGenerator.typeError",
+          "code": "        obj();"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"TypeError\",\"message\":\"obj is not a function\",\"stack\":[{\"file\":\"src/utils/TestUtil.ts\",\"line\":20,\"at\":\"ErrorGenerator.typeError\",\"code\":\"        obj();\"}]}",
+    "formatted": "\n\u001b[91mobj is not a function\u001b[0m \u001b[1m(TypeError)\u001b[0m\n\n> \u001b[91mTestUtil.ts:20\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.typeError:\n    \u001b[1m        obj();\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "syntaxError": {
+    "error": {
+      "name": "SyntaxError",
+      "message": "Unexpected token ';'",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 27,
+          "at": "ErrorGenerator.syntaxError",
+          "code": "        eval(\"var a =;\");"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"SyntaxError\",\"message\":\"Unexpected token ';'\",\"stack\":[{\"file\":\"src/utils/TestUtil.ts\",\"line\":27,\"at\":\"ErrorGenerator.syntaxError\",\"code\":\"        eval(\\\"var a =;\\\");\"}]}",
+    "formatted": "\n\u001b[91mUnexpected token ';'\u001b[0m \u001b[1m(SyntaxError)\u001b[0m\n\n> \u001b[91mTestUtil.ts:27\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.syntaxError:\n    \u001b[1m        eval(\"var a =;\");\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "customError": {
+    "error": {
+      "name": "Error",
+      "message": "Custom error thrown",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 31,
+          "at": "ErrorGenerator.customError",
+          "code": "        throw new Error(\"Custom error thrown\");"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"Error\",\"message\":\"Custom error thrown\",\"stack\":[{\"file\":\"src/utils/TestUtil.ts\",\"line\":31,\"at\":\"ErrorGenerator.customError\",\"code\":\"        throw new Error(\\\"Custom error thrown\\\");\"}]}",
+    "formatted": "\n\u001b[91mCustom error thrown\u001b[0m \u001b[1m(Error)\u001b[0m\n\n> \u001b[91mTestUtil.ts:31\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.customError:\n    \u001b[1m        throw new Error(\"Custom error thrown\");\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "rangeError": {
+    "error": {
+      "name": "RangeError",
+      "message": "Invalid array length",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 34,
+          "at": "ErrorGenerator.rangeError",
+          "code": "        new Array(-1);"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"RangeError\",\"message\":\"Invalid array length\",\"stack\":[{\"file\":\"src/utils/TestUtil.ts\",\"line\":34,\"at\":\"ErrorGenerator.rangeError\",\"code\":\"        new Array(-1);\"}]}",
+    "formatted": "\n\u001b[91mInvalid array length\u001b[0m \u001b[1m(RangeError)\u001b[0m\n\n> \u001b[91mTestUtil.ts:34\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.rangeError:\n    \u001b[1m        new Array(-1);\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "evalError": {
+    "error": {
+      "name": "EvalError",
+      "message": "EvalError triggered",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.js:37:9), <anonymous>",
+          "line": 1,
+          "at": "eval (eval at evalError",
+          "code": "<no-data>"
+        },
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 37,
+          "at": "ErrorGenerator.evalError",
+          "code": "        eval(\"throw new EvalError('EvalError triggered')\");"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"EvalError\",\"message\":\"EvalError triggered\",\"stack\":[{\"file\":\"src/utils/TestUtil.js:37:9), <anonymous>\",\"line\":1,\"at\":\"eval (eval at evalError\",\"code\":\"<no-data>\"},{\"file\":\"src/utils/TestUtil.ts\",\"line\":37,\"at\":\"ErrorGenerator.evalError\",\"code\":\"        eval(\\\"throw new EvalError('EvalError triggered')\\\");\"}]}",
+    "formatted": "\n\u001b[91mEvalError triggered\u001b[0m \u001b[1m(EvalError)\u001b[0m\n\n> \u001b[91mTestUtil.js:37:9), <anonymous>:1\u001b[0m    \u001b[2m(src/utils/TestUtil.js:37:9), <anonymous>)\u001b[0m\n    eval (eval at evalError\n> \u001b[91mTestUtil.ts:37\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.evalError:\n    \u001b[1m        eval(\"throw new EvalError('EvalError triggered')\");\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "uriError": {
+    "error": {
+      "name": "URIError",
+      "message": "URI malformed",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 41,
+          "at": "ErrorGenerator.uriError",
+          "code": "        decodeURIComponent(\"%\");"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"URIError\",\"message\":\"URI malformed\",\"stack\":[{\"file\":\"src/utils/TestUtil.ts\",\"line\":41,\"at\":\"ErrorGenerator.uriError\",\"code\":\"        decodeURIComponent(\\\"%\\\");\"}]}",
+    "formatted": "\n\u001b[91mURI malformed\u001b[0m \u001b[1m(URIError)\u001b[0m\n\n> \u001b[91mTestUtil.ts:41\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.uriError:\n    \u001b[1m        decodeURIComponent(\"%\");\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "aggregateError": {
+    "error": {
+      "name": "AggregateError",
+      "message": "Aggregated multiple errors",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 59,
+          "at": "ErrorGenerator.aggregateError",
+          "code": "            this.referenceError();"
+        },
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 65,
+          "at": "ErrorGenerator.aggregateError",
+          "code": "            this.typeError();"
+        },
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 71,
+          "at": "ErrorGenerator.aggregateError",
+          "code": "            this.syntaxError();"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"AggregateError\",\"message\":\"Aggregated multiple errors\",\"stack\":[{\"file\":\"src/utils/TestUtil.ts\",\"line\":59,\"at\":\"ErrorGenerator.aggregateError\",\"code\":\"            this.referenceError();\"},{\"file\":\"src/utils/TestUtil.ts\",\"line\":65,\"at\":\"ErrorGenerator.aggregateError\",\"code\":\"            this.typeError();\"},{\"file\":\"src/utils/TestUtil.ts\",\"line\":71,\"at\":\"ErrorGenerator.aggregateError\",\"code\":\"            this.syntaxError();\"}]}",
+    "formatted": "\n\u001b[91mAggregated multiple errors\u001b[0m \u001b[1m(AggregateError)\u001b[0m\n\n> \u001b[91mTestUtil.ts:59\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.aggregateError:\n    \u001b[1m            this.referenceError();\u001b[0m\u001b[2m\n    ```\u001b[0m\n> \u001b[91mTestUtil.ts:65\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.aggregateError:\n    \u001b[1m            this.typeError();\u001b[0m\u001b[2m\n    ```\u001b[0m\n> \u001b[91mTestUtil.ts:71\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.aggregateError:\n    \u001b[1m            this.syntaxError();\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "devErrorObject": {
+    "error": {
+      "name": "Error",
+      "message": "Developer error with Error object",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 82,
+          "at": "ErrorGenerator.devErrorObject",
+          "code": "        throw new Error(\"Developer error with Error object\");"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"Error\",\"message\":\"Developer error with Error object\",\"stack\":[{\"file\":\"src/utils/TestUtil.ts\",\"line\":82,\"at\":\"ErrorGenerator.devErrorObject\",\"code\":\"        throw new Error(\\\"Developer error with Error object\\\");\"}]}",
+    "formatted": "\n\u001b[91mDeveloper error with Error object\u001b[0m \u001b[1m(Error)\u001b[0m\n\n> \u001b[91mTestUtil.ts:82\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.devErrorObject:\n    \u001b[1m        throw new Error(\"Developer error with Error object\");\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "devErrorMessage": {
+    "error": {
+      "name": "DevErrorMessage",
+      "message": "Developer error with string message",
+      "stack": "No stack trace available for string-based errors",
+      "params": ""
+    },
+    "log": "{\"name\":\"DevErrorMessage\",\"message\":\"Developer error with string message\",\"stack\":\"No stack trace available for string-based errors\"}",
+    "formatted": "\n\u001b[91mDeveloper error with string message\u001b[0m \u001b[1m(DevErrorMessage)\u001b[0m\nStack Trace: No stack trace available for string-based errors\n"
+  },
+  "unhandledPromiseRejection": {
+    "error": {
+      "name": "Error",
+      "message": "Unhandled promise rejection",
+      "stack": [
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 50,
+          "at": "ErrorGenerator.unhandledPromiseRejection",
+          "code": "        return Promise.reject(new Error(\"Unhandled promise rejection\"));"
+        }
+      ],
+      "params": ""
+    },
+    "log": "{\"name\":\"Error\",\"message\":\"Unhandled promise rejection\",\"stack\":[{\"file\":\"src/utils/TestUtil.ts\",\"line\":50,\"at\":\"ErrorGenerator.unhandledPromiseRejection\",\"code\":\"        return Promise.reject(new Error(\\\"Unhandled promise rejection\\\"));\"}]}",
+    "formatted": "\n\u001b[91mUnhandled promise rejection\u001b[0m \u001b[1m(Error)\u001b[0m\n\n> \u001b[91mTestUtil.ts:50\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // ErrorGenerator.unhandledPromiseRejection:\n    \u001b[1m        return Promise.reject(new Error(\"Unhandled promise rejection\"));\u001b[0m\u001b[2m\n    ```\u001b[0m\n"
+  },
+  "axiosError": {
+    "error": {
+      "name": "Error",
+      "message": "getaddrinfo ENOTFOUND nonexistent.server",
+      "stack": [
+        {
+          "file": "node_modules/axios/lib/core/AxiosError.ts",
+          "line": 89,
+          "at": "AxiosError.from",
+          "code": "<no-data>"
+        },
+        {
+          "file": "src/utils/TestUtil.ts",
+          "line": 7,
+          "at": "async ErrorGenerator.axiosError",
+          "code": "            await axios.get(\"http://nonexistent.server\");"
+        }
+      ],
+      "params": "code: ENOTFOUND, errno: -3008, syscall: getaddrinfo, hostname: nonexistent.server"
+    },
+    "log": "{\"name\":\"Error\",\"message\":\"getaddrinfo ENOTFOUND nonexistent.server\",\"stack\":[{\"file\":\"node_modules/axios/lib/core/AxiosError.ts\",\"line\":89,\"at\":\"AxiosError.from\",\"code\":\"<no-data>\"},{\"file\":\"src/utils/TestUtil.ts\",\"line\":7,\"at\":\"async ErrorGenerator.axiosError\",\"code\":\"            await axios.get(\\\"http://nonexistent.server\\\");\"}],\"params\":\"code: ENOTFOUND, errno: -3008, syscall: getaddrinfo, hostname: nonexistent.server\"}",
+    "formatted": "\n\u001b[91mgetaddrinfo ENOTFOUND nonexistent.server\u001b[0m \u001b[1m(Error)\u001b[0m\n\n> \u001b[91mAxiosError.ts:89\u001b[0m    \u001b[2m(node_modules/axios/lib/core/AxiosError.ts)\u001b[0m\n    AxiosError.from\n> \u001b[91mTestUtil.ts:7\u001b[0m    \u001b[2m(src/utils/TestUtil.ts)\u001b[0m\u001b[2m\n    ```js\n\u001b[0m    // async ErrorGenerator.axiosError:\n    \u001b[1m            await axios.get(\"http://nonexistent.server\");\u001b[0m\u001b[2m\n    ```\u001b[0m\n\nAdditional Parameters: code: \u001b[1mENOTFOUND\u001b[0m, errno: \u001b[1m-3008\u001b[0m, syscall: \u001b[1mgetaddrinfo\u001b[0m, hostname: \u001b[1mnonexistent.server\u001b[0m"
+  },
+  "systemError": {
+    "error": {
+      "name": "Error",
+      "message": "ENOENT: no such file or directory, open 'nonexistentfile.txt'",
+      "stack": [],
+      "params": "code: ENOENT, errno: -2, syscall: open, path: nonexistentfile.txt"
+    },
+    "log": "{\"name\":\"Error\",\"message\":\"ENOENT: no such file or directory, open 'nonexistentfile.txt'\",\"stack\":[],\"params\":\"code: ENOENT, errno: -2, syscall: open, path: nonexistentfile.txt\"}",
+    "formatted": "\n\u001b[91mENOENT: no such file or directory, open 'nonexistentfile.txt'\u001b[0m \u001b[1m(Error)\u001b[0m\nStack Trace: \n\nAdditional Parameters: code: \u001b[1mENOENT\u001b[0m, errno: \u001b[1m-2\u001b[0m, syscall: \u001b[1mopen\u001b[0m, path: \u001b[1mnonexistentfile.txt\u001b[0m"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "@synagi/bugprompt",
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "npm@9.5.0",
+  "author": "freegheist",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "src",
+    "dist",
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "format": "prettier --cache-location=.prettiercache --write  --log-level warn .",
+    "clean": "rm -rf dist/ *.tsbuildinfo",
+    "build": "npm run format && npm run prepare",
+    "test:gen": "npm run build && node dist/__tests__/stacktrace.data.gen.js",
+    "test": "npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "docs": "npm run build && node ./dist/genDocs.js",
+    "prepare": "npm run clean && tsc -p ./tsconfig.json"
+  },
+  "dependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/node": "^20.14.10",
+    "glob": "^11.0.0",
+    "typescript": "^5.5.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "axios": "^1.7.2",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.2",
+    "ts-jest": "^29.2.2",
+    "ts-node": "^10.9.2"
+  }
+}
