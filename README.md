@@ -5,11 +5,16 @@ Generate docs from code for easier LLM prompting.
 ## Installation
 
 ```bash
-npm install https://github.com/synagi/bugprompt.git
+npm install --save-dev https://github.com/synagi/bugprompt.git
 ```
 
-## Generating Code Docs
+## Run with Node.js
+Docs will be generated to `./bin/bugprompt/` in your project root:
+```bash
+node ./node_modules/@synagi/bugprompt/dist/genDocs.js
+```
 
+## NPM Script
 ```json
   "scripts": {
     "docs": "node ./node_modules/@synagi/bugprompt/dist/genDocs.js"
@@ -18,7 +23,7 @@ npm install https://github.com/synagi/bugprompt.git
 
 ## Config Breakdown
 
-The `./bugprompt.json` config (auto-gen'd on first-run) lets you create sets of docs containing just the code you want:
+Use the `./bugprompt.json` config (auto-generated on first-run) to define sets of docs containing just the code you want:
 
 - Create multiple docs with different sets of files levels of detail
 - Set up templates for consistent doc styling
