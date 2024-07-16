@@ -16,7 +16,7 @@ interface Document {
   minificationLevel?: number;
 }
 
-interface ContentItem {
+export interface ContentItem {
   reference?: string;
   root?: string;
   title?: string;
