@@ -3,19 +3,7 @@ import path from "path";
 import { glob } from "glob";
 import FileUtil from "./FileUtil.js";
 import MinifyUtil from "./MinifyUtil.js";
-
-interface ContentItem {
-  reference?: string;
-  root?: string;
-  title?: string;
-  description?: string;
-  include?: string[] | null;
-  exclude?: string[] | null;
-  headerRootPath?: boolean;
-  headerRelativePath?: boolean;
-  headerPrefix?: string;
-  useCodeblocks?: boolean;
-}
+import { ContentItem } from "../core/DocsBuilder.js";
 
 class DocUtil {
   static async prepareOutputDirectory(dirPath: string): Promise<void> {

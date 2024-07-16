@@ -47,48 +47,82 @@ export interface BugpromptConfig {
 
 export const CONFIG_NAME = "bugprompt";
 
-class Config implements BugpromptConfig {
+export class Config implements BugpromptConfig {
   stacktrace: StackTraceConfig;
   log: LogConfig;
   docs: DocsConfig;
+  private configSource: string = "default";
 
   constructor() {
     this.stacktrace = { enabled: false };
     this.log = { enabled: false };
     this.docs = { ...DEFAULT_CONFIG.docs };
+    console.log("Config initialized with default values");
   }
 
   load(): void {
+    console.log("Starting configuration load process");
     const projectRoot = ProjectUtil.findProjectRoot();
     if (!projectRoot) {
       console.warn(
         "Project root not found. Using current directory for config.",
       );
+      this.configSource = "default (project root not found)";
       return;
     }
+    console.log(`Project root found: ${projectRoot}`);
+
     const configPath = path.join(projectRoot, `${CONFIG_NAME}.json`);
+    console.log(`Looking for config file at: ${configPath}`);
 
     if (!fs.existsSync(configPath)) {
+      console.log(
+        `Config file not found. Creating default config at ${configPath}`,
+      );
       this.createDefaultConfig(configPath);
+      this.configSource = "newly created default";
+    } else {
+      console.log(`Config file found at ${configPath}`);
+      const fileConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
+      console.log("Merging file config with default config");
+      this.mergeConfig(fileConfig);
+      this.configSource = "merged (file + default)";
     }
 
-    const fileConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
-    this.mergeConfig(fileConfig);
+    console.log(`Final config source: ${this.configSource}`);
+    console.log("Final configuration:", JSON.stringify(this, null, 2));
   }
 
   private mergeConfig(fileConfig: Partial<BugpromptConfig>): void {
-    this.stacktrace = {
-      enabled: fileConfig.stacktrace?.enabled ?? false,
-    };
-    this.log = {
-      enabled: fileConfig.log?.enabled ?? false,
-    };
+    console.log("Starting deep merge of configurations");
+    this.stacktrace = this.deepMerge(
+      this.stacktrace,
+      fileConfig.stacktrace || {},
+    );
+    this.log = this.deepMerge(this.log, fileConfig.log || {});
     if (fileConfig.docs) {
-      this.docs = {
-        ...this.docs,
-        ...fileConfig.docs,
-      };
+      this.docs = this.deepMerge(this.docs, fileConfig.docs);
     }
+    console.log("Configuration merge completed");
+  }
+
+  private deepMerge(target: any, source: any): any {
+    const output = Object.assign({}, target);
+    if (this.isObject(target) && this.isObject(source)) {
+      Object.keys(source).forEach((key) => {
+        if (this.isObject(source[key])) {
+          if (!(key in target)) Object.assign(output, { [key]: source[key] });
+          else output[key] = this.deepMerge(target[key], source[key]);
+        } else {
+          Object.assign(output, { [key]: source[key] });
+        }
+      });
+    }
+    return output;
+  }
+
+  private isObject(item: any): boolean {
+    return item && typeof item === "object" && !Array.isArray(item);
   }
 
   private createDefaultConfig(configPath: string): void {
