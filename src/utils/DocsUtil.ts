@@ -114,22 +114,27 @@ class DocUtil {
   ): string {
     let header = "";
 
-    const includeRootPath = contentItem.headerRootPath !== false;
-    const includeRelativePath = contentItem.headerRelativePath !== false;
+    const shouldAddHeader =
+      contentItem.headerPrefix !== "" && contentItem.headerPrefix !== undefined;
 
-    if (includeRootPath) {
-      header += path.relative(process.cwd(), projectRoot);
-    }
-    if (includeRelativePath) {
-      header += includeRootPath ? "/" : "";
-      header += path.relative(projectRoot, filePath);
-    }
+    if (shouldAddHeader) {
+      const includeRootPath = contentItem.headerRootPath !== false;
+      const includeRelativePath = contentItem.headerRelativePath !== false;
 
-    if (contentItem.headerPrefix) {
-      header = contentItem.headerPrefix + (header ? " " + header : "");
-    }
+      if (includeRootPath) {
+        header += path.relative(process.cwd(), projectRoot);
+      }
+      if (includeRelativePath) {
+        header += includeRootPath ? "/" : "";
+        header += path.relative(projectRoot, filePath);
+      }
 
-    header = header ? `${header}\n` : "";
+      if (contentItem.headerPrefix) {
+        header = contentItem.headerPrefix + (header ? " " + header : "");
+      }
+
+      header = header ? `${header}\n` : "";
+    }
 
     if (contentItem.useCodeblocks !== false) {
       return header + "```" + ext.slice(1) + "\n" + content + "\n```\n\n";
