@@ -9,7 +9,7 @@ class DocUtil {
   static async prepareOutputDirectory(dirPath: string): Promise<void> {
     try {
       await fs.promises.mkdir(dirPath, { recursive: true });
-      console.log(`Output directory created or verified: ${dirPath}`);
+      //console.log(`Output directory created or verified: ${dirPath}`);
       await FileUtil.cleanDirectory(dirPath);
     } catch (error) {
       console.error(`Error preparing output directory ${dirPath}:`, error);
@@ -23,20 +23,17 @@ class DocUtil {
     projectRoot: string,
     minificationLevel: number,
   ): Promise<string> {
-    console.log(
-      `Processing content item:`,
-      JSON.stringify(contentItem, null, 2),
-    );
+    //console.log(`Processing content item:`, JSON.stringify(contentItem, null, 2),);
 
     const includePatterns = contentItem.include || ["**/*"];
     const excludePatterns = contentItem.exclude || [];
 
-    console.log(`Include patterns:`, includePatterns);
-    console.log(`Exclude patterns:`, excludePatterns);
+    //console.log(`Include patterns:`, includePatterns);
+    //console.log(`Exclude patterns:`, excludePatterns);
 
     const itemRoot = contentItem.root || "";
     const fullItemRoot = path.join(projectRoot, itemRoot);
-    console.log(`Full item root:`, fullItemRoot);
+    //console.log(`Full item root:`, fullItemRoot);
 
     let content = "";
 
@@ -54,20 +51,20 @@ class DocUtil {
       ignore: excludePatterns,
       absolute: true,
     };
-    console.log(`Glob options:`, JSON.stringify(globOptions, null, 2));
+    //console.log(`Glob options:`, JSON.stringify(globOptions, null, 2));
 
     for (const pattern of includePatterns) {
       const files = await glob(pattern, globOptions);
-      console.log(`Glob pattern ${pattern} matched files:`, files.length);
+      //console.log(`Glob pattern ${pattern} matched files:`, files.length);
 
       if (files.length > 0) {
-        console.log(`Sample matched files:`, files.slice(0, 5));
+        //console.log(`Sample matched files:`, files.slice(0, 5));
       }
 
       for (const fullPath of files) {
         if (!processedFiles.has(fullPath)) {
           processedFiles.add(fullPath);
-          console.log(`Processing file: ${fullPath}`);
+          //console.log(`Processing file: ${fullPath}`);
           const fileContent = await this.processFile(
             fullPath,
             MinifyUtil,
@@ -157,9 +154,7 @@ class DocUtil {
 
     try {
       await fs.promises.writeFile(outputFileName, documentationContent);
-      console.log(
-        `Documentation for ${sanitizedFileName} has been generated in ${outputFileName}`,
-      );
+      console.log(`Created ${sanitizedFileName} [${outputFileName}]`);
     } catch (error) {
       console.error(
         `Error writing documentation for ${sanitizedFileName}:`,

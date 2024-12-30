@@ -57,11 +57,15 @@ export class Config implements BugpromptConfig {
     this.stacktrace = { enabled: false };
     this.log = { enabled: false };
     this.docs = { ...DEFAULT_CONFIG.docs };
-    console.log("Config initialized with default values");
+    //console.log("Config initialized with default values");
+  }
+
+  public getConfigSource(): string {
+    return this.configSource;
   }
 
   load(): void {
-    console.log("Starting configuration load process");
+    //console.log("Starting configuration load process");
     const projectRoot = ProjectUtil.findProjectRoot();
     if (!projectRoot) {
       console.warn(
@@ -70,10 +74,10 @@ export class Config implements BugpromptConfig {
       this.configSource = "default (project root not found)";
       return;
     }
-    console.log(`Project root found: ${projectRoot}`);
+    //console.log(`Project root found: ${projectRoot}`);
 
     const configPath = path.join(projectRoot, `${CONFIG_NAME}.json`);
-    console.log(`Looking for config file at: ${configPath}`);
+    //console.log(`Looking for config file at: ${configPath}`);
 
     if (!fs.existsSync(configPath)) {
       console.log(
@@ -82,19 +86,19 @@ export class Config implements BugpromptConfig {
       this.createDefaultConfig(configPath);
       this.configSource = "newly created default";
     } else {
-      console.log(`Config file found at ${configPath}`);
+      //console.log(`Config file found at ${configPath}`);
       const fileConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
-      console.log("Merging file config with default config");
+      //console.log("Merging file config with default config");
       this.mergeConfig(fileConfig);
       this.configSource = "merged (file + default)";
     }
 
-    console.log(`Final config source: ${this.configSource}`);
-    console.log("Final configuration:", JSON.stringify(this, null, 2));
+    //console.log(`Final config source: ${this.configSource}`);
+    //console.log("Final configuration:", JSON.stringify(this, null, 2));
   }
 
   private mergeConfig(fileConfig: Partial<BugpromptConfig>): void {
-    console.log("Starting deep merge of configurations");
+    //console.log("Starting deep merge of configurations");
     this.stacktrace = this.deepMerge(
       this.stacktrace,
       fileConfig.stacktrace || {},
@@ -103,7 +107,7 @@ export class Config implements BugpromptConfig {
     if (fileConfig.docs) {
       this.docs = this.deepMerge(this.docs, fileConfig.docs);
     }
-    console.log("Configuration merge completed");
+    //console.log("Configuration merge completed");
   }
 
   private deepMerge(target: any, source: any): any {
