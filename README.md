@@ -56,6 +56,7 @@ Use the `./bugprompt.json` config (auto-generated on first-run) to define sets o
     "documents": [                             // List of output docs to create
       {
         "fileName": "Project Code",            // Name of the output doc
+        "outDir": "./bin/somedir",             // Optional, overrides with a specific output dir for the doc
         "minificationLevel": 0,                // 0: No minification, 1: Basic, 2: Aggressive
         "templateName": "default",             // Reference to a template defined above
         "content": [                           // Define sets of files to include in this doc

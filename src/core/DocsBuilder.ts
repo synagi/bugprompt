@@ -2,6 +2,7 @@ import path from "path";
 import Config, { CONFIG_NAME } from "../config/Config.js";
 import ProjectUtil from "../utils/ProjectUtil.js";
 import DocUtil from "../utils/DocsUtil.js";
+import fs from "fs";
 
 interface Template {
   name: string;
@@ -14,6 +15,7 @@ interface Document {
   templateName?: string;
   content: ContentItem[];
   minificationLevel?: number;
+  outDir?: string;
 }
 
 export interface ContentItem {
@@ -96,8 +98,18 @@ export class DocsBuilder {
         );
       }
 
+      const outputDir = document.outDir
+        ? path.join(this.projectRoot, document.outDir)
+        : this.outputPath;
+      if (
+        document.outDir &&
+        !(await fs.promises.stat(outputDir).catch(() => null))
+      ) {
+        await fs.promises.mkdir(outputDir, { recursive: true });
+        console.log(`Created directory: ${outputDir}`);
+      }
       await DocUtil.writeDocumentation(
-        this.outputPath,
+        outputDir,
         document.fileName,
         documentationContent,
       );
