@@ -2,6 +2,7 @@ import path from "path";
 import Config, { CONFIG_NAME } from "../config/Config.js";
 import ProjectUtil from "../utils/ProjectUtil.js";
 import DocUtil from "../utils/DocsUtil.js";
+import fs from "fs";
 
 interface Template {
   name: string;
@@ -14,6 +15,7 @@ interface Document {
   templateName?: string;
   content: ContentItem[];
   minificationLevel?: number;
+  outDir?: string;
 }
 
 export interface ContentItem {
@@ -53,11 +55,9 @@ export class DocsBuilder {
     }
     this.projectRoot = projectRoot;
     this.outputPath = outputPath;
-    console.log(
-      `DocsBuilder initialized with projectRoot: ${this.projectRoot}`,
-    );
-    console.log(`Output path: ${this.outputPath}`);
-    console.log(`Config:`, JSON.stringify(this.config, null, 2));
+    //console.log(`Building to project root: ${this.projectRoot}`,);
+    //console.log(`Output path: ${this.outputPath}`);
+    //console.log(`Config:`, JSON.stringify(this.config, null, 2));
     this.buildContentMap();
   }
 
@@ -79,16 +79,16 @@ export class DocsBuilder {
         }
       }
     }
-    console.log(
+    /*console.log(
       "Content map built with keys:",
       Array.from(this.contentMap.keys()),
-    );
+    );*/
   }
 
   public async build(): Promise<void> {
     for (const document of this.config.documents) {
-      console.log(`Processing document: ${document.fileName}`);
-      console.log(`Document config:`, JSON.stringify(document, null, 2));
+      //console.log(`Processing document: ${document.fileName}`);
+      //console.log(`Document config:`, JSON.stringify(document, null, 2));
 
       let documentationContent = await this.processDocument(document);
       if (this.config.sanitize && Array.isArray(this.config.sanitize)) {
@@ -98,8 +98,18 @@ export class DocsBuilder {
         );
       }
 
+      const outputDir = document.outDir
+        ? path.join(this.projectRoot, document.outDir)
+        : this.outputPath;
+      if (
+        document.outDir &&
+        !(await fs.promises.stat(outputDir).catch(() => null))
+      ) {
+        await fs.promises.mkdir(outputDir, { recursive: true });
+        console.log(`Created directory: ${outputDir}`);
+      }
       await DocUtil.writeDocumentation(
-        this.outputPath,
+        outputDir,
         document.fileName,
         documentationContent,
       );
@@ -107,7 +117,7 @@ export class DocsBuilder {
   }
 
   private async processDocument(document: Document): Promise<string> {
-    console.log(`Processing document: ${document.fileName}`);
+    //console.log(`Processing document: ${document.fileName}`);
     let documentationContent = "";
 
     let template: Template | null = null;
@@ -128,9 +138,7 @@ export class DocsBuilder {
     const minificationLevel = document.minificationLevel || 0;
 
     for (const contentItem of document.content) {
-      console.log(
-        `Processing content for title: ${contentItem.title || "undefined"}`,
-      );
+      // console.log(`Processing content for title: ${contentItem.title || "undefined"}`,);
       const resolvedContentItem = this.resolveContentItem(contentItem);
       const fileContents = await DocUtil.processContentItem(
         resolvedContentItem,
@@ -152,7 +160,7 @@ export class DocsBuilder {
     if (contentItem.reference) {
       const referenceItem = this.contentMap.get(contentItem.reference);
       if (referenceItem) {
-        console.log(`Resolving reference for ${contentItem.reference}`);
+        //console.log(`Resolving reference for ${contentItem.reference}`);
         return this.mergeContentItems(contentItem, referenceItem);
       } else {
         console.warn(`Referenced item '${contentItem.reference}' not found.`);
@@ -168,7 +176,7 @@ export class DocsBuilder {
     const merged: ContentItem = { ...source, ...target };
     merged.include = target.include || source.include;
     merged.exclude = target.exclude || source.exclude;
-    console.log(`Merged content item:`, JSON.stringify(merged, null, 2));
+    //console.log(`Merged content item:`, JSON.stringify(merged, null, 2));
     return merged;
   }
 

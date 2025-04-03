@@ -9,7 +9,7 @@ class FileUtil {
         const fullPath = path.join(dirPath, file);
         await fs.promises.rm(fullPath, { recursive: true, force: true });
       }
-      console.log(`Directory cleaned: ${dirPath}`);
+      //console.log(`Directory cleaned: ${dirPath}`);
     } catch (error) {
       console.error(`Error cleaning directory ${dirPath}:`, error);
       throw error;
